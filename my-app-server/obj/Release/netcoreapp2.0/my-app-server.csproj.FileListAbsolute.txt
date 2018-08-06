@@ -1,0 +1,11 @@
+E:\Rtype\my-app-server\my-app-server\bin\Release\netcoreapp2.0\my-app-server.deps.json
+E:\Rtype\my-app-server\my-app-server\bin\Release\netcoreapp2.0\my-app-server.runtimeconfig.json
+E:\Rtype\my-app-server\my-app-server\bin\Release\netcoreapp2.0\my-app-server.runtimeconfig.dev.json
+E:\Rtype\my-app-server\my-app-server\bin\Release\netcoreapp2.0\my-app-server.dll
+E:\Rtype\my-app-server\my-app-server\bin\Release\netcoreapp2.0\my-app-server.pdb
+E:\Rtype\my-app-server\my-app-server\obj\Release\netcoreapp2.0\my-app-server.csproj.CoreCompileInputs.cache
+E:\Rtype\my-app-server\my-app-server\obj\Release\netcoreapp2.0\my-app-server.AssemblyInfoInputs.cache
+E:\Rtype\my-app-server\my-app-server\obj\Release\netcoreapp2.0\my-app-server.AssemblyInfo.cs
+E:\Rtype\my-app-server\my-app-server\obj\Release\netcoreapp2.0\my-app-server.dll
+E:\Rtype\my-app-server\my-app-server\obj\Release\netcoreapp2.0\my-app-server.pdb
+E:\Rtype\my-app-server\my-app-server\obj\Release\netcoreapp2.0\my-app-server.csprojAssemblyReference.cache

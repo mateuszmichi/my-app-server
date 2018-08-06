@@ -31,7 +31,7 @@ namespace my_app_server.Controllers
             }
             if (UsersExists(user.Name) && PasswordMatches(user.Name, user.Password))
             {
-                UserToken usertoken = GenerateUsersToken(user);
+                UserToken usertoken = Security.GenerateUsersToken(user.Name,this._context);
                 Tokens token = null;
                 if (user.isRemembered)
                 {
@@ -111,23 +111,6 @@ namespace my_app_server.Controllers
                 {
                     token.UpdateToken(time);
                 }
-            }
-            return token;
-        }
-        private UserToken GenerateUsersToken(LoginUser user)
-        {
-            DateTime time = DateTime.UtcNow;
-            UserToken token;
-            if ((token = _context.UserToken.FirstOrDefault(e => e.UserName == user.Name)) == null)
-            {
-                token = UserToken.GenToken(user.Name, time);
-                _context.UserToken.Add(token);
-            }
-            else
-            {
-                UserToken ntoken = UserToken.GenToken(user.Name, time);
-                token.HashedToken = ntoken.HashedToken;
-                token.ExpireDate = ntoken.ExpireDate;
             }
             return token;
         }

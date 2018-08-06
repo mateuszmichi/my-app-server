@@ -45,7 +45,7 @@ namespace my_app_server.Controllers
                 return BadRequest(new DataError("tokenErr", "Relogin is required. Autologin has timedout."));
             }
 
-            UserToken usertoken = GenerateUsersToken(dbtoken.UserName);
+            UserToken usertoken = Security.GenerateUsersToken(dbtoken.UserName, this._context);
             dbtoken.UpdateToken(time);
 
             try
@@ -95,21 +95,6 @@ namespace my_app_server.Controllers
         {
             if (!token.IsTimeValid(now)) return false;
             return (passedtoken.Token == token.HashedToken) && (passedtoken.TokenName == token.TokenName);
-        }
-        private UserToken GenerateUsersToken(string username)
-        {
-            DateTime time = DateTime.UtcNow;
-            UserToken token;
-            if ((token = _context.UserToken.FirstOrDefault(e => e.UserName == username)) == null)
-            {
-                token = UserToken.GenToken(username, time);
-                _context.UserToken.Add(token);
-            }
-            else
-            {
-                token = UserToken.GenToken(username, time);
-            }
-            return token;
         }
         public class LoginToken
         {

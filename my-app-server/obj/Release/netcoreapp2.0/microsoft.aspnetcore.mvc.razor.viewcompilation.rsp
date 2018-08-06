@@ -1,0 +1,5 @@
+E:\Rtype\my-app-server\my-app-server
+--output-path=obj\Release\netcoreapp2.0\
+--application-name=my-app-server
+--content-root=E:\Rtype\my-app-server\my-app-server
+--file=
