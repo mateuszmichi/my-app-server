@@ -10,19 +10,18 @@ using my_app_server.Models;
 namespace my_app_server.Controllers
 {
     [Produces("application/json")]
-    [Route("api/HerosRemove")]
-    public class HerosRemoveController : Controller
+    [Route("api/HerosLoad")]
+    public class HerosLoadController : Controller
     {
         private readonly my_appContext _context;
 
-        public HerosRemoveController(my_appContext context)
+        public HerosLoadController(my_appContext context)
         {
             _context = context;
         }
-
-        // POST: api/HerosRemove
+        // POST: api/HerosLoad
         [HttpPost]
-        public async Task<IActionResult> PostHeros([FromBody] PassedData<PassedRemoveCharacter> passedData)
+        public IActionResult PostHeros([FromBody] PassedData<string> passedData)
         {
             if (!ModelState.IsValid)
             {
@@ -49,31 +48,19 @@ namespace my_app_server.Controllers
                     dbtoken.UpdateToken(now);
                 }
             }
-            Users user = _context.Users.FirstOrDefault(e => e.Name == dbtoken.UserName);
-            if (user.Password != HashClass.GenHash(passedData.Data.Password))
+            Heros hero = _context.Heros.Where(e => e.Name == passedData.Data).Join(_context.UsersHeros.Where(e => e.UserName == dbtoken.UserName), e => e.HeroId, e => e.HeroId, (a, b) => a).FirstOrDefault();
+            if(hero == null)
             {
-                return BadRequest(new DataError("passwordErr", "Password is incorrect."));
+                return BadRequest(new DataError("noHeroErr", "Hero is not available."));
             }
-            Heros herotoremove = _context.Heros.FirstOrDefault(e => e.Name == passedData.Data.HeroName);
-            UsersHeros conntoremove = _context.UsersHeros.FirstOrDefault(e => e.UserName == dbtoken.UserName && e.HeroId == herotoremove.HeroId);
-            // TODO: remove actiontokens
-            _context.UsersHeros.Remove(conntoremove);
-            _context.Heros.Remove(herotoremove);
-            try
+            ActionToken actionToken = Security.GenerateActionToken(hero.HeroId, _context);
+            ActionTokenResult tokenResult = new ActionTokenResult()
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                return BadRequest(new DataError("serverErr", "Failed to remove hero."));
-            }
-            return Ok(new { success = true, removedHero = herotoremove.Name });
+                HeroName = hero.Name,
+                Token = actionToken.HashedToken,
+            };
+            return Ok(new { success = true, actiontoken = tokenResult, hero = (HeroResult)hero });
         }
 
-        public class PassedRemoveCharacter
-        {
-            public string Password { get; set; }
-            public string HeroName { get; set; }
-        }
     }
 }

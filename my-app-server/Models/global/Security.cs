@@ -29,5 +29,22 @@ namespace my_app_server.Models
             }
             return token;
         }
+        public static ActionToken GenerateActionToken(int heroid, my_appContext _context)
+        {
+            DateTime time = DateTime.UtcNow;
+            ActionToken token;
+            if ((token = _context.ActionToken.FirstOrDefault(e => e.HeroId == heroid)) == null)
+            {
+                token = ActionToken.GenToken(heroid, time);
+                _context.ActionToken.Add(token);
+            }
+            else
+            {
+                ActionToken ntoken = ActionToken.GenToken(heroid, time);
+                token.HashedToken = ntoken.HashedToken;
+                token.ExpireDate = ntoken.ExpireDate;
+            }
+            return token;
+        }
     }
 }
