@@ -26,4 +26,9 @@ namespace my_app_server.Models
         public string Username { get; set; }
         public HeroBrief[] Characters { get; set; }
     }
+    public class ActionTokenResult
+    {
+        public string HeroName { get; set; }
+        public string Token { get; set; }
+    }
 }
