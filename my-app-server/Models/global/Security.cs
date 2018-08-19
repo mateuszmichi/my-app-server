@@ -29,6 +29,10 @@ namespace my_app_server.Models
             }
             return token;
         }
+        public static ActionToken CheckActionToken(my_appContext context, ActionTokenResult token,int HeroID)
+        {
+            return context.ActionToken.FirstOrDefault(e => (e.HeroId == HeroID && e.HashedToken == token.Token));
+        }
         public static ActionToken GenerateActionToken(int heroid, my_appContext _context)
         {
             DateTime time = DateTime.UtcNow;

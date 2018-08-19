@@ -59,6 +59,28 @@ namespace my_app_server.Controllers
                 HeroName = hero.Name,
                 Token = actionToken.HashedToken,
             };
+            if(hero.Status == 0)
+            {
+                var location = _context.HerosLocations.FirstOrDefault(e => (e.HeroId == hero.HeroId) && (e.LocationIdentifier == hero.CurrentLocation));
+                if(location == null)
+                {
+                    return BadRequest(new DataError("LocationErr", "Location is not available."));
+                }
+                var descr = _context.LocationsDb.FirstOrDefault(e => e.LocationIdentifier == location.LocationIdentifier);
+                if (descr == null)
+                {
+                    return BadRequest(new DataError("LocationErr", "LocationData is not available."));
+                }
+                try
+                {
+                    LocationResult locationResult = LocationHandler.LoadLocalLocation(descr.Sketch, location.Description);
+                    return Ok(new { success = true, actiontoken = tokenResult, hero = (HeroResult)hero, location = locationResult });
+                }
+                catch
+                {
+                    return BadRequest(new DataError("LocationErr","Location is not available."));
+                }
+            }
             return Ok(new { success = true, actiontoken = tokenResult, hero = (HeroResult)hero });
         }
 

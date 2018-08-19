@@ -5,6 +5,11 @@ namespace my_app_server.Models
 {
     public partial class Heros
     {
+        public Heros()
+        {
+            HerosLocations = new HashSet<HerosLocations>();
+        }
+
         public int HeroId { get; set; }
         public string Name { get; set; }
         public string Nickname { get; set; }
@@ -24,8 +29,12 @@ namespace my_app_server.Models
         public int Intelligence { get; set; }
         public int Charisma { get; set; }
         public int Orders { get; set; }
+        public int CurrentLocation { get; set; }
+        public int Status { get; set; }
 
         public ActionToken ActionToken { get; set; }
+        public Traveling Traveling { get; set; }
         public UsersHeros UsersHeros { get; set; }
+        public ICollection<HerosLocations> HerosLocations { get; set; }
     }
 }

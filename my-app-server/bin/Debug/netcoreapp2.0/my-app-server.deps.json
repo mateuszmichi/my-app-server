@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.0",
-    "signature": "372e689cda1e8223a705ebe7d5eda8c8610c6e70"
+    "signature": "ef56bb8e89f20790d64044119a5601d40254c9af"
   },
   "compilationOptions": {
     "defines": [
@@ -30,7 +30,8 @@
           "Microsoft.EntityFrameworkCore.Tools": "2.0.3",
           "Microsoft.NETCore.App": "2.0.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "2.0.3",
-          "Newtonsoft.Json": "11.0.2"
+          "Newtonsoft.Json": "11.0.2",
+          "OptimizedPriorityQueue": "4.1.1"
         },
         "runtime": {
           "my-app-server.dll": {}
@@ -2980,6 +2981,17 @@
         },
         "compile": {
           "lib/netstandard1.3/NuGet.Frameworks.dll": {}
+        }
+      },
+      "OptimizedPriorityQueue/4.1.1": {
+        "runtime": {
+          "lib/netstandard1.0/Priority Queue.dll": {
+            "assemblyVersion": "4.1.1.0",
+            "fileVersion": "4.1.1.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard1.0/Priority Queue.dll": {}
         }
       },
       "Remotion.Linq/2.1.1": {
@@ -5976,6 +5988,13 @@
       "path": "nuget.frameworks/4.0.0",
       "hashPath": "nuget.frameworks.4.0.0.nupkg.sha512"
     },
+    "OptimizedPriorityQueue/4.1.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-d5XJqkj122UrGrBt/7DQuseohSjuQj7uB7nrxaQV2RHQJ3BdGyoIHtYOrKEx54G2ldUT8HDfjV/6ag2FHCnTyA==",
+      "path": "optimizedpriorityqueue/4.1.1",
+      "hashPath": "optimizedpriorityqueue.4.1.1.nupkg.sha512"
+    },
     "Remotion.Linq/2.1.1": {
       "type": "package",
       "serviceable": true,
@@ -6686,7 +6705,7 @@
     "System.Security.Cryptography.Xml/4.4.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-q9Dren/YP5jhRCkDvLfuaPpMTQzP97ANvzq/OoGgwK8YdLRSTABS9oW5/23OKoM2DRCuBrh4qaecD2YNhPtuzQ==",
+      "sha512": "sha512-1m+fKVrApgKYMRuE0MF0vGjqy4XqAp1rCtyAzMXhJajMDDytMh/rHk9hp4M7KKk3QQZoWJUvyUY7xcw74w+JiQ==",
       "path": "system.security.cryptography.xml/4.4.2",
       "hashPath": "system.security.cryptography.xml.4.4.2.nupkg.sha512"
     },
