@@ -8,7 +8,10 @@ namespace my_app_server.Models
     {
         public virtual DbSet<ActionToken> ActionToken { get; set; }
         public virtual DbSet<Heros> Heros { get; set; }
+        public virtual DbSet<HerosLocations> HerosLocations { get; set; }
+        public virtual DbSet<LocationsDb> LocationsDb { get; set; }
         public virtual DbSet<Tokens> Tokens { get; set; }
+        public virtual DbSet<Traveling> Traveling { get; set; }
         public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<UsersHeros> UsersHeros { get; set; }
         public virtual DbSet<UserToken> UserToken { get; set; }
@@ -70,6 +73,59 @@ namespace my_app_server.Models
                 entity.Property(e => e.Sl).HasColumnName("SL");
             });
 
+            modelBuilder.Entity<HerosLocations>(entity =>
+            {
+                entity.HasKey(e => e.LocationId);
+
+                entity.HasIndex(e => e.HeroId)
+                    .HasName("IX_HerosLocations");
+
+                entity.HasIndex(e => e.LocationIdentifier)
+                    .HasName("IX_HerosLocations_1");
+
+                entity.HasIndex(e => new { e.HeroId, e.LocationIdentifier })
+                    .HasName("IX_HerosLocations_2")
+                    .IsUnique();
+
+                entity.Property(e => e.LocationId)
+                    .HasColumnName("LocationID")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Description)
+                    .IsRequired()
+                    .IsUnicode(false);
+
+                entity.Property(e => e.HeroId).HasColumnName("HeroID");
+
+                entity.HasOne(d => d.Hero)
+                    .WithMany(p => p.HerosLocations)
+                    .HasForeignKey(d => d.HeroId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_HerosLocations_Heros");
+
+                entity.HasOne(d => d.LocationIdentifierNavigation)
+                    .WithMany(p => p.HerosLocations)
+                    .HasForeignKey(d => d.LocationIdentifier)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_HerosLocations_LocationsDB");
+            });
+
+            modelBuilder.Entity<LocationsDb>(entity =>
+            {
+                entity.HasKey(e => e.LocationIdentifier);
+
+                entity.ToTable("LocationsDB");
+
+                entity.HasIndex(e => e.LocationIdentifier)
+                    .HasName("IX_LocationsDB");
+
+                entity.Property(e => e.LocationIdentifier).ValueGeneratedNever();
+
+                entity.Property(e => e.Sketch)
+                    .IsRequired()
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<Tokens>(entity =>
             {
                 entity.HasKey(e => e.TokenName);
@@ -102,6 +158,40 @@ namespace my_app_server.Models
                     .HasForeignKey<Tokens>(d => d.UserName)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Tokens_Users1");
+            });
+
+            modelBuilder.Entity<Traveling>(entity =>
+            {
+                entity.HasKey(e => e.HeroId);
+
+                entity.HasIndex(e => e.EndTime)
+                    .HasName("IX_Traveling");
+
+                entity.Property(e => e.HeroId)
+                    .HasColumnName("HeroID")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EndTime).HasColumnType("datetime");
+
+                entity.Property(e => e.ReverseTime).HasColumnType("datetime");
+
+                entity.Property(e => e.StartName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.StartTime).HasColumnType("datetime");
+
+                entity.Property(e => e.TargetName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.Hero)
+                    .WithOne(p => p.Traveling)
+                    .HasForeignKey<Traveling>(d => d.HeroId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Traveling_Heros");
             });
 
             modelBuilder.Entity<Users>(entity =>

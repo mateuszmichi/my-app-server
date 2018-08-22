@@ -5,7 +5,46 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\Game\" />
+    <Compile Remove="Models\**" />
+    <Content Remove="Models\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <None Remove="Models\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="HerosLocationsLoadController.cs" />
+    <Compile Remove="HerosLocationsMoveToController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Models\ActionToken.cs" />
+    <Compile Include="Models\ActionTokenExt.cs" />
+    <Compile Include="Models\Game\Graph.cs" />
+    <Compile Include="Models\Game\Location.cs" />
+    <Compile Include="Models\Game\LocationHandler.cs" />
+    <Compile Include="Models\Global\HashClass.cs" />
+    <Compile Include="Models\Global\PassedClasses.cs" />
+    <Compile Include="Models\Global\Security.cs" />
+    <Compile Include="Models\Global\ServerOptions.cs" />
+    <Compile Include="Models\Heros.cs" />
+    <Compile Include="Models\HerosExt.cs" />
+    <Compile Include="Models\HerosLocations.cs" />
+    <Compile Include="Models\LocationsDb.cs" />
+    <Compile Include="Models\my_appContext.cs" />
+    <Compile Include="Models\my_appContextExt.cs" />
+    <Compile Include="Models\Tokens.cs" />
+    <Compile Include="Models\TokensExt.cs" />
+    <Compile Include="Models\Traveling.cs" />
+    <Compile Include="Models\TravelingExt.cs" />
+    <Compile Include="Models\Users.cs" />
+    <Compile Include="Models\UsersHeros.cs" />
+    <Compile Include="Models\UserToken.cs" />
+    <Compile Include="Models\UserTokenExt.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\Login\" />
+    <Folder Include="Controllers\AccountManagement\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
@@ -16,6 +55,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="OptimizedPriorityQueue" Version="4.1.1" />
   </ItemGroup>
 
 </Project>
