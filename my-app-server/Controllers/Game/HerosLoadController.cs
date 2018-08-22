@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using my_app_server.Models;
+using Newtonsoft.Json;
 
 namespace my_app_server.Controllers
 {
@@ -21,7 +22,7 @@ namespace my_app_server.Controllers
         }
         // POST: api/HerosLoad
         [HttpPost]
-        public IActionResult PostHeros([FromBody] PassedData<string> passedData)
+        public async Task<IActionResult> PostHeros([FromBody] PassedData<string> passedData)
         {
             if (!ModelState.IsValid)
             {
@@ -49,7 +50,7 @@ namespace my_app_server.Controllers
                 }
             }
             Heros hero = _context.Heros.Where(e => e.Name == passedData.Data).Join(_context.UsersHeros.Where(e => e.UserName == dbtoken.UserName), e => e.HeroId, e => e.HeroId, (a, b) => a).FirstOrDefault();
-            if(hero == null)
+            if (hero == null)
             {
                 return BadRequest(new DataError("noHeroErr", "Hero is not available."));
             }
@@ -59,29 +60,64 @@ namespace my_app_server.Controllers
                 HeroName = hero.Name,
                 Token = actionToken.HashedToken,
             };
-            if(hero.Status == 0)
+            try
             {
-                var location = _context.HerosLocations.FirstOrDefault(e => (e.HeroId == hero.HeroId) && (e.LocationIdentifier == hero.CurrentLocation));
-                if(location == null)
-                {
-                    return BadRequest(new DataError("LocationErr", "Location is not available."));
-                }
-                var descr = _context.LocationsDb.FirstOrDefault(e => e.LocationIdentifier == location.LocationIdentifier);
-                if (descr == null)
-                {
-                    return BadRequest(new DataError("LocationErr", "LocationData is not available."));
-                }
-                try
-                {
-                    LocationResult locationResult = LocationHandler.LoadLocalLocation(descr.Sketch, location.Description);
-                    return Ok(new { success = true, actiontoken = tokenResult, hero = (HeroResult)hero, location = locationResult });
-                }
-                catch
-                {
-                    return BadRequest(new DataError("LocationErr","Location is not available."));
-                }
+                await _context.SaveChangesAsync();
             }
-            return Ok(new { success = true, actiontoken = tokenResult, hero = (HeroResult)hero });
+            catch (DbUpdateException)
+            {
+                return BadRequest(new DataError("databaseErr", "Failed to update tokens."));
+            }
+
+            var location = _context.HerosLocations.FirstOrDefault(e => (e.HeroId == hero.HeroId) && (e.LocationIdentifier == hero.CurrentLocation));
+            if (location == null)
+            {
+                return BadRequest(new DataError("LocationErr", "Location is not available."));
+            }
+            var descr = _context.LocationsDb.FirstOrDefault(e => e.LocationIdentifier == location.LocationIdentifier);
+            if (descr == null)
+            {
+                return BadRequest(new DataError("LocationErr", "LocationData is not available."));
+            }
+            try
+            {
+                LocationDescription description = JsonConvert.DeserializeObject<LocationDescription>(descr.Sketch);
+                LocationState state = JsonConvert.DeserializeObject<LocationState>(location.Description);
+                if(hero.Status == 1)
+                {
+                    Traveling travel = _context.Traveling.FirstOrDefault(e => e.HeroId == hero.HeroId);
+                    if(travel == null)
+                    {
+                        throw new Exception("Traveling hero without travel in DB.");
+                    }
+                    if (travel.HasEnded(now))
+                    {
+                        state = description.MoveTo(travel.UpdatedLocationID(), state);
+                        hero.Status = 0;
+                        location.Description = JsonConvert.SerializeObject(state);
+                        _context.Traveling.Remove(travel);
+                        try
+                        {
+                            await _context.SaveChangesAsync();
+                        }
+                        catch (DbUpdateException)
+                        {
+                            return BadRequest(new DataError("databaseErr", "Failed to remove travel."));
+                        }
+                    }
+                    else
+                    {
+                        //TODO
+                    }
+
+                }
+                LocationResult locationResult = description.GenLocalForm(state);
+                return Ok(new { success = true, actiontoken = tokenResult, hero = (HeroResult)hero, location = locationResult });
+            }
+            catch
+            {
+                return BadRequest(new DataError("LocationErr", "Location is not available."));
+            }
         }
 
     }

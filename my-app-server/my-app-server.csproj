@@ -20,6 +20,8 @@
     <Compile Include="Models\ActionToken.cs" />
     <Compile Include="Models\ActionTokenExt.cs" />
     <Compile Include="Models\Game\Graph.cs" />
+    <Compile Include="Models\Game\Location.cs" />
+    <Compile Include="Models\Game\LocationHandler.cs" />
     <Compile Include="Models\Global\HashClass.cs" />
     <Compile Include="Models\Global\PassedClasses.cs" />
     <Compile Include="Models\Global\Security.cs" />
@@ -33,6 +35,7 @@
     <Compile Include="Models\Tokens.cs" />
     <Compile Include="Models\TokensExt.cs" />
     <Compile Include="Models\Traveling.cs" />
+    <Compile Include="Models\TravelingExt.cs" />
     <Compile Include="Models\Users.cs" />
     <Compile Include="Models\UsersHeros.cs" />
     <Compile Include="Models\UserToken.cs" />
@@ -40,7 +43,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\Game\" />
     <Folder Include="Controllers\Login\" />
     <Folder Include="Controllers\AccountManagement\" />
     <Folder Include="wwwroot\" />
