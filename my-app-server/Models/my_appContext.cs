@@ -7,8 +7,11 @@ namespace my_app_server.Models
     public partial class my_appContext : DbContext
     {
         public virtual DbSet<ActionToken> ActionToken { get; set; }
+        public virtual DbSet<Backpack> Backpack { get; set; }
+        public virtual DbSet<Equipment> Equipment { get; set; }
         public virtual DbSet<Heros> Heros { get; set; }
         public virtual DbSet<HerosLocations> HerosLocations { get; set; }
+        public virtual DbSet<Items> Items { get; set; }
         public virtual DbSet<LocationsDb> LocationsDb { get; set; }
         public virtual DbSet<Tokens> Tokens { get; set; }
         public virtual DbSet<Traveling> Traveling { get; set; }
@@ -44,6 +47,94 @@ namespace my_app_server.Models
                     .HasForeignKey<ActionToken>(d => d.HeroId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ActionToken_Heros");
+            });
+
+            modelBuilder.Entity<Backpack>(entity =>
+            {
+                entity.HasKey(e => new { e.HeroId, e.SlotNr });
+
+                entity.Property(e => e.HeroId).HasColumnName("HeroID");
+
+                entity.Property(e => e.SlotNr).HasColumnName("SlotNR");
+
+                entity.Property(e => e.ItemId).HasColumnName("ItemID");
+
+                entity.HasOne(d => d.Hero)
+                    .WithMany(p => p.Backpack)
+                    .HasForeignKey(d => d.HeroId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Backpack_Heros");
+
+                entity.HasOne(d => d.Item)
+                    .WithMany(p => p.Backpack)
+                    .HasForeignKey(d => d.ItemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Backpack_Items");
+            });
+
+            modelBuilder.Entity<Equipment>(entity =>
+            {
+                entity.HasKey(e => e.HeroId);
+
+                entity.Property(e => e.HeroId)
+                    .HasColumnName("HeroID")
+                    .ValueGeneratedNever();
+
+                entity.HasOne(d => d.ArmourNavigation)
+                    .WithMany(p => p.EquipmentArmourNavigation)
+                    .HasForeignKey(d => d.Armour)
+                    .HasConstraintName("FK_Equipment_Items2");
+
+                entity.HasOne(d => d.BraceletNavigation)
+                    .WithMany(p => p.EquipmentBraceletNavigation)
+                    .HasForeignKey(d => d.Bracelet)
+                    .HasConstraintName("FK_Equipment_Items9");
+
+                entity.HasOne(d => d.FirstHandNavigation)
+                    .WithMany(p => p.EquipmentFirstHandNavigation)
+                    .HasForeignKey(d => d.FirstHand)
+                    .HasConstraintName("FK_Equipment_Items");
+
+                entity.HasOne(d => d.GlovesNavigation)
+                    .WithMany(p => p.EquipmentGlovesNavigation)
+                    .HasForeignKey(d => d.Gloves)
+                    .HasConstraintName("FK_Equipment_Items5");
+
+                entity.HasOne(d => d.Hero)
+                    .WithOne(p => p.Equipment)
+                    .HasForeignKey<Equipment>(d => d.HeroId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Equipment_Heros");
+
+                entity.HasOne(d => d.NecklesNavigation)
+                    .WithMany(p => p.EquipmentNecklesNavigation)
+                    .HasForeignKey(d => d.Neckles)
+                    .HasConstraintName("FK_Equipment_Items8");
+
+                entity.HasOne(d => d.Ring1Navigation)
+                    .WithMany(p => p.EquipmentRing1Navigation)
+                    .HasForeignKey(d => d.Ring1)
+                    .HasConstraintName("FK_Equipment_Items6");
+
+                entity.HasOne(d => d.Ring2Navigation)
+                    .WithMany(p => p.EquipmentRing2Navigation)
+                    .HasForeignKey(d => d.Ring2)
+                    .HasConstraintName("FK_Equipment_Items7");
+
+                entity.HasOne(d => d.SecondHandNavigation)
+                    .WithMany(p => p.EquipmentSecondHandNavigation)
+                    .HasForeignKey(d => d.SecondHand)
+                    .HasConstraintName("FK_Equipment_Items1");
+
+                entity.HasOne(d => d.ShoesNavigation)
+                    .WithMany(p => p.EquipmentShoesNavigation)
+                    .HasForeignKey(d => d.Shoes)
+                    .HasConstraintName("FK_Equipment_Items4");
+
+                entity.HasOne(d => d.TrousersNavigation)
+                    .WithMany(p => p.EquipmentTrousersNavigation)
+                    .HasForeignKey(d => d.Trousers)
+                    .HasConstraintName("FK_Equipment_Items3");
             });
 
             modelBuilder.Entity<Heros>(entity =>
@@ -108,6 +199,22 @@ namespace my_app_server.Models
                     .HasForeignKey(d => d.LocationIdentifier)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_HerosLocations_LocationsDB");
+            });
+
+            modelBuilder.Entity<Items>(entity =>
+            {
+                entity.HasKey(e => e.ItemId);
+
+                entity.Property(e => e.ItemId)
+                    .HasColumnName("ItemID")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Modifier).IsUnicode(false);
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<LocationsDb>(entity =>

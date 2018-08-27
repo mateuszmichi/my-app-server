@@ -66,7 +66,6 @@ namespace my_app_server.Controllers
                 Hp = 10,
                 Intelligence = data.Data.Attributes[5],
                 Lvl = 1,
-                Money = 0,
                 Name = data.Data.Name,
                 Nickname = data.Data.Nickname,
                 Orders = 0,

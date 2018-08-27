@@ -112,7 +112,7 @@ namespace my_app_server.Controllers
                         await _context.SaveChangesAsync();
                         return Ok(new { success = true, travel = travelResult });
                     }
-                    catch (DbUpdateException exc)
+                    catch (DbUpdateException)
                     {
                         return BadRequest(new DataError("databaseErr", "Failed to remember travel."));
                     }

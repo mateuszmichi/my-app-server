@@ -19,6 +19,9 @@
   <ItemGroup>
     <Compile Include="Models\ActionToken.cs" />
     <Compile Include="Models\ActionTokenExt.cs" />
+    <Compile Include="Models\Backpack.cs" />
+    <Compile Include="Models\Equipment.cs" />
+    <Compile Include="Models\EquipmentExt.cs" />
     <Compile Include="Models\Game\Graph.cs" />
     <Compile Include="Models\Game\Location.cs" />
     <Compile Include="Models\Game\LocationHandler.cs" />
@@ -29,6 +32,8 @@
     <Compile Include="Models\Heros.cs" />
     <Compile Include="Models\HerosExt.cs" />
     <Compile Include="Models\HerosLocations.cs" />
+    <Compile Include="Models\ItemsExt.cs" />
+    <Compile Include="Models\Items.cs" />
     <Compile Include="Models\LocationsDb.cs" />
     <Compile Include="Models\my_appContext.cs" />
     <Compile Include="Models\my_appContextExt.cs" />
