@@ -9,7 +9,7 @@ namespace my_app_server.Models
     {
         public enum ItemTypes
         {
-            WEAPON,
+            SINGLEHAND_WEAPON,
             HELMET,
             ARMOUR,
             TROUSERS,
@@ -18,6 +18,9 @@ namespace my_app_server.Models
             RING,
             NECKLES,
             BRACELET,
+            DOUBLEHAND_WEAPON,
+            SECONDARY_WEAPON,
+            SHIELD,
         }
         public static explicit operator ItemResult(Items item)
         {
@@ -28,8 +31,9 @@ namespace my_app_server.Models
                 Name = item.Name,
                 Attributes = new int[8] { item.Strength, item.Endurance, item.Dexterity, item.Reflex, item.Wisdom, item.Intelligence, item.Charisma, item.Willpower },
                 Lvl = item.Lvl,
-                PrimaryAttr = item.PrimaryAttr,
-                SecondaryAttr = item.SecondaryAttr,
+                DmgMin = item.DmgMin,
+                DmgMax = item.DmgMax,
+                Armour = item.Armour,
             });
         }
     }

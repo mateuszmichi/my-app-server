@@ -33,8 +33,9 @@ namespace my_app_server.Models
         public int Intelligence { get; set; }
         public int Charisma { get; set; }
         public string Modifier { get; set; }
-        public int PrimaryAttr { get; set; }
-        public int SecondaryAttr { get; set; }
+        public int DmgMin { get; set; }
+        public int DmgMax { get; set; }
+        public int Armour { get; set; }
 
         public ICollection<Backpack> Backpack { get; set; }
         public ICollection<Equipment> EquipmentArmourNavigation { get; set; }

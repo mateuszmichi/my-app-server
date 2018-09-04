@@ -81,12 +81,15 @@ namespace my_app_server.Controllers
             }
             try
             {
+                object statusData = null;
+
+                // location generation
                 LocationDescription description = JsonConvert.DeserializeObject<LocationDescription>(descr.Sketch);
                 LocationState state = JsonConvert.DeserializeObject<LocationState>(location.Description);
-                if(hero.Status == 1)
+                if (hero.Status == 1)
                 {
                     Traveling travel = _context.Traveling.FirstOrDefault(e => e.HeroId == hero.HeroId);
-                    if(travel == null)
+                    if (travel == null)
                     {
                         throw new Exception("Traveling hero without travel in DB.");
                     }
@@ -107,12 +110,35 @@ namespace my_app_server.Controllers
                     }
                     else
                     {
-                        //TODO
+                        statusData = (TravelResult)travel;
                     }
-
                 }
                 LocationResult locationResult = description.GenLocalForm(state);
-                return Ok(new { success = true, actiontoken = tokenResult, hero = (HeroResult)hero, location = locationResult });
+
+
+                // equipment generation
+                var Equipment = _context.Equipment.FirstOrDefault(e => e.HeroId == hero.HeroId);
+                if (Equipment == null)
+                {
+                    return BadRequest(new DataError("equipmentErr", "Hero is without equipment."));
+                }
+                List<int?> used = new List<int?>
+                {
+                    Equipment.Armour, Equipment.Bracelet, Equipment.FirstHand, Equipment.Gloves, Equipment.Helmet, Equipment.Neckles, Equipment.Ring1, Equipment.Ring2,
+                    Equipment.SecondHand, Equipment.Shoes, Equipment.Trousers
+                };
+                var ItemsOn = used.Where(e => e.HasValue).Select(e => e.Value).ToList();
+
+                var Backpack = _context.Backpack.Where(e => e.HeroId == hero.HeroId);
+                var UsedItems = Backpack.Select(e => e.ItemId).Distinct().ToList();
+                UsedItems.AddRange(ItemsOn);
+                UsedItems = UsedItems.Distinct().OrderBy(e => e).ToList();
+
+                var ItemsInUse = _context.Items.Join(UsedItems, e => e.ItemId, e => e, (a, b) => a).ToArray();
+
+                EquipmentResult EQ = Equipment.GenResult(ItemsInUse.ToArray(), Backpack.ToList());
+
+                return Ok(new { success = true, actiontoken = tokenResult, hero = hero.GenResult(EQ,locationResult, statusData) });
             }
             catch
             {

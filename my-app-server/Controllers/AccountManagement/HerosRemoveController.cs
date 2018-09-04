@@ -56,9 +56,21 @@ namespace my_app_server.Controllers
             }
             Heros herotoremove = _context.Heros.FirstOrDefault(e => e.Name == passedData.Data.HeroName);
             UsersHeros conntoremove = _context.UsersHeros.FirstOrDefault(e => e.UserName == dbtoken.UserName && e.HeroId == herotoremove.HeroId);
+            var tokentoremove = _context.ActionToken.Where(e => e.HeroId == herotoremove.HeroId);
+            var locationstoremove = _context.HerosLocations.Where(e => e.HeroId == herotoremove.HeroId);
+            var travelingtoremove = _context.Traveling.Where(e => e.HeroId == herotoremove.HeroId);
+            var equipmenttoremove = _context.Equipment.Where(e => e.HeroId == herotoremove.HeroId);
+            var backpacktoremove = _context.Backpack.Where(e => e.HeroId == herotoremove.HeroId);
             // TODO: remove actiontokens
-            _context.UsersHeros.Remove(conntoremove);
+            
+            if (tokentoremove.Count() > 0) _context.ActionToken.RemoveRange(tokentoremove);
+            if (locationstoremove.Count() > 0) _context.HerosLocations.RemoveRange(locationstoremove);
+            if (travelingtoremove.Count() > 0) _context.Traveling.RemoveRange(travelingtoremove);
+            if (equipmenttoremove.Count() > 0) _context.Equipment.RemoveRange(equipmenttoremove);
+            if (backpacktoremove.Count() > 0) _context.Backpack.RemoveRange(backpacktoremove);
             _context.Heros.Remove(herotoremove);
+            _context.UsersHeros.Remove(conntoremove);
+
             try
             {
                 await _context.SaveChangesAsync();

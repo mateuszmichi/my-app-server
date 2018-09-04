@@ -62,22 +62,22 @@ namespace my_app_server.Controllers
             var delusertoken = _context.UserToken.Where(e => e.UserName == deluser.Name);
             var deltoken = _context.Tokens.Where(e => e.UserName == deluser.Name);
 
-            if (usersheros.Count() > 0)
-            {
-                _context.UsersHeros.RemoveRange(usersheros);
-            }
-            if(delheros.Count() > 0)
-            {
-                _context.Heros.RemoveRange(delheros);
-            }
-            if (delusertoken.Count() > 0)
-            {
-                _context.UserToken.RemoveRange(delusertoken);
-            }
-            if (deltoken.Count() > 0)
-            {
-                _context.Tokens.RemoveRange(deltoken);
-            }
+            var delactiontokens = _context.ActionToken.Join(delheros, e => e.HeroId, f => f.HeroId, (a, b) => a);
+            var delheroslocations = _context.HerosLocations.Join(delheros, e => e.HeroId, f => f.HeroId, (a, b) => a);
+            var delherostraveling = _context.Traveling.Join(delheros, e => e.HeroId, f => f.HeroId, (a, b) => a);
+            var delherosequipment = _context.Equipment.Join(delheros, e => e.HeroId, f => f.HeroId, (a, b) => a);
+            var delherosbackpack = _context.Backpack.Join(delheros, e => e.HeroId, f => f.HeroId, (a, b) => a);
+
+            if (delactiontokens.Count() > 0) _context.ActionToken.RemoveRange(delactiontokens);
+            if (delheroslocations.Count() > 0) _context.HerosLocations.RemoveRange(delheroslocations);
+            if (delherostraveling.Count() > 0) _context.Traveling.RemoveRange(delherostraveling);
+            if (delherosequipment.Count() > 0) _context.Equipment.RemoveRange(delherosequipment);
+            if (delherosbackpack.Count() > 0) _context.Backpack.RemoveRange(delherosbackpack);
+
+            if (usersheros.Count() > 0) _context.UsersHeros.RemoveRange(usersheros);
+            if(delheros.Count() > 0) _context.Heros.RemoveRange(delheros);
+            if (delusertoken.Count() > 0) _context.UserToken.RemoveRange(delusertoken);
+            if (deltoken.Count() > 0) _context.Tokens.RemoveRange(deltoken);
             _context.Users.Remove(deluser);
 
             try

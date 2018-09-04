@@ -52,7 +52,14 @@ namespace my_app_server.Controllers
                     throw;
                 }
             }
-
+            try
+            {
+                SendEmail.SendInvitationEmail(user, users.Password);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
             return Ok();
         }
         private bool UsersExists(string id)

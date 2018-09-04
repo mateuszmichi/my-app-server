@@ -6,24 +6,22 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using my_app_server.Models;
-using Newtonsoft.Json;
 
 namespace my_app_server.Controllers
 {
     [Produces("application/json")]
-    [Route("api/EquipmentsLoad")]
-    public class EquipmentsLoadController : Controller
+    [Route("api/TravelingsReverse")]
+    public class TravelingsReverseController : Controller
     {
         private readonly my_appContext _context;
 
-        public EquipmentsLoadController(my_appContext context)
+        public TravelingsReverseController(my_appContext context)
         {
             _context = context;
         }
-
-        // POST: api/EquipmentsLoad
+        // POST: api/TravelingsReverse
         [HttpPost]
-        public async Task<IActionResult> PostHerosLocations([FromBody] PassedGameData<int?> passedData)
+        public async Task<IActionResult> PostTraveling([FromBody] PassedGameData<int?> passedData)
         {
             if (!ModelState.IsValid)
             {
@@ -67,38 +65,38 @@ namespace my_app_server.Controllers
                     gametoken.UpdateToken(now);
                 }
             }
-            try
+            // if can go there
+            if (hero.Status == 1)
             {
-                await _context.SaveChangesAsync();
+                try
+                {
+                    var Travel = _context.Traveling.FirstOrDefault(e => e.HeroId == hero.HeroId);
+                    if(Travel == null || Travel.HasEnded(now) || Travel.IsReverse)
+                    {
+                        throw new Exception();
+                    }
+                    Travel.IsReverse = true;
+                    Travel.ReverseTime = now;
+                    TravelResult travelResult = (TravelResult)Travel;
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+                        return Ok(new { success = true, travel = travelResult });
+                    }
+                    catch (DbUpdateException)
+                    {
+                        return BadRequest(new DataError("databaseErr", "Failed to remember travel."));
+                    }
+                }
+                catch
+                {
+                    return BadRequest(new DataError("TravelErr", "Travel reverse is not available."));
+                }
             }
-            catch (DbUpdateException)
+            else
             {
-                return BadRequest(new DataError("databaseErr", "Failed to update tokens."));
+                return BadRequest(new DataError("LocationErr", "Hero is not in the travel."));
             }
-            // can do stuff
-
-            var Equipment = _context.Equipment.FirstOrDefault(e => e.HeroId == hero.HeroId);
-            if (Equipment == null)
-            {
-                return BadRequest(new DataError("equipmentErr", "Hero is without equipment."));
-            }
-            List<int?> used = new List<int?>
-            {
-                Equipment.Armour, Equipment.Bracelet, Equipment.FirstHand, Equipment.Gloves, Equipment.Neckles, Equipment.Ring1, Equipment.Ring2,
-                Equipment.SecondHand, Equipment.Shoes, Equipment.Trousers
-            };
-            var ItemsOn = used.Where(e => e.HasValue).Select(e => e.Value).ToList();
-
-            var Backpack = _context.Backpack.Where(e => e.HeroId == hero.HeroId);
-            var UsedItems = Backpack.Select(e => e.ItemId).Distinct().ToList();
-            UsedItems.AddRange(ItemsOn);
-            UsedItems = UsedItems.Distinct().OrderBy(e => e).ToList();
-
-            var ItemsInUse = _context.Items.Join(UsedItems, e => e.ItemId, e => e, (a, b) => a).ToArray();
-
-            EquipmentResult EQ = Equipment.GenResult(ItemsInUse.ToArray(), Backpack.ToList());
-
-            return Ok(new { success = true, equipment = EQ });
         }
     }
 }

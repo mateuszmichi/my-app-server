@@ -31,6 +31,7 @@ namespace my_app_server.Models
                 Bracelet = this.Bracelet,
                 FirstHand = this.FirstHand,
                 Gloves = this.Gloves,
+                Helmet = this.Helmet,
                 KnownItems = known,
                 Neckles = this.Neckles,
                 Ring1 = this.Ring1,
@@ -40,6 +41,26 @@ namespace my_app_server.Models
                 Trousers = this.Trousers,
                 Money = this.Money,
             });
+        }
+        public static Equipment GenFreshEquipment(int heroID)
+        {
+            return new Equipment()
+            {
+                Armour = null,
+                BackpackSize = HeroCalculator.InitialBackpackSize,
+                Bracelet = null,
+                FirstHand = null,
+                Gloves = null,
+                Helmet = null,
+                HeroId = heroID,
+                Money = 0,
+                Neckles = null,
+                Ring1 = null,
+                Ring2 = null,
+                SecondHand = null,
+                Shoes = null,
+                Trousers = null,
+            };
         }
     }
 }

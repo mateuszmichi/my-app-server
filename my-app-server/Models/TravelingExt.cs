@@ -24,17 +24,29 @@ namespace my_app_server.Models
         {
             return (this.IsReverse) ? this.Start : this.Target;
         }
+
         public static explicit operator TravelResult(Traveling travel)
         {
+            DateTime? rev = null;
+            if (travel.ReverseTime.HasValue)
+            {
+                rev = ChangeTimeToPureUTC(travel.ReverseTime.Value);
+            }
             return (new TravelResult()
             {
-                EndTime = travel.EndTime,
+                EndTime = ChangeTimeToPureUTC(travel.EndTime),
                 IsReverse = travel.IsReverse,
-                ReverseTime = travel.ReverseTime,
+                ReverseTime = rev,
                 StartName = travel.StartName,
-                StartTime = travel.StartTime,
+                StartTime = ChangeTimeToPureUTC(travel.StartTime),
                 TargetName = travel.TargetName,
             });
+        }
+        private static DateTime ChangeTimeToPureUTC(DateTime time)
+        {
+            string s = time.ToString();
+            var dateTimeOffset = DateTimeOffset.Parse(s, null);
+            return dateTimeOffset.DateTime;
         }
     }
 }

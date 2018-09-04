@@ -18,6 +18,7 @@ namespace my_app_server.Models
         public int Experience { get; set; }
         public int Hp { get; set; }
         public int Sl { get; set; }
+        public int Slbase { get; set; }
         public int Country { get; set; }
         public int Origin { get; set; }
         public int Strength { get; set; }

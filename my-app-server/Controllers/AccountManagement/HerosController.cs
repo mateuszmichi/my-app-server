@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using my_app_server.Models;
+using Newtonsoft.Json;
 
 namespace my_app_server.Controllers
 {
@@ -59,11 +60,13 @@ namespace my_app_server.Controllers
             {
                 Charisma = data.Data.Attributes[6],
                 Country = data.Data.Country,
+                // starting location of type??
+                CurrentLocation = 1,
                 Dexterity = data.Data.Attributes[2],
                 Endurance = data.Data.Attributes[1],
                 Experience = 0,
                 HeroId = ID + 1,
-                Hp = 10,
+                Hp = HeroCalculator.PureMaxHP(HeroCalculator.BaseHP(1),data.Data.Attributes),
                 Intelligence = data.Data.Attributes[5],
                 Lvl = 1,
                 Name = data.Data.Name,
@@ -72,6 +75,8 @@ namespace my_app_server.Controllers
                 Origin = data.Data.Origin,
                 Reflex = data.Data.Attributes[3],
                 Sl = 0,
+                Slbase = 0,
+                Status = 0,
                 Strength = data.Data.Attributes[0],
                 Willpower = data.Data.Attributes[7],
                 Wisdom = data.Data.Attributes[4],
@@ -81,8 +86,14 @@ namespace my_app_server.Controllers
                 HeroId = newly.HeroId,
                 UserName = dbtoken.UserName,
             };
+            Equipment eq = Equipment.GenFreshEquipment(newly.HeroId);
+            HerosLocations location = HerosLocations.GenInitialLocation(_context, newly.HeroId);
+            
             _context.Heros.Add(newly);
             _context.UsersHeros.Add(userheros);
+            _context.Equipment.Add(eq);
+            _context.HerosLocations.Add(location);
+
             try
             {
                 await _context.SaveChangesAsync();

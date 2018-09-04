@@ -54,6 +54,7 @@ namespace my_app_server.Models
         public int? FirstHand { get; set; }
         public int? SecondHand { get; set; }
         public int? Armour { get; set; }
+        public int? Helmet { get; set; }
         public int? Trousers { get; set; }
         public int? Shoes { get; set; }
         public int? Gloves { get; set; }
@@ -70,7 +71,18 @@ namespace my_app_server.Models
         public string Name { get; set; }
         public int[] Attributes { get; set; }
         public int Lvl { get; set; }
-        public int PrimaryAttr { get; set; }
-        public int SecondaryAttr { get; set; }
+        public int Armour { get; set; }
+        public int DmgMin { get; set; }
+        public int DmgMax { get; set; }
+    }
+    public class EquipmentModifyResult
+    {
+        public EquipmentModification[] Removed { get; set; }
+        public EquipmentModification[] Added { get; set; }
+        public class EquipmentModification
+        {
+            public string Target { get; set; }
+            public int? ItemID { get; set; }
+        }
     }
 }

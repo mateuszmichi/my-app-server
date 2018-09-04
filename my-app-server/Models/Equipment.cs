@@ -10,6 +10,7 @@ namespace my_app_server.Models
         public int? FirstHand { get; set; }
         public int? SecondHand { get; set; }
         public int? Armour { get; set; }
+        public int? Helmet { get; set; }
         public int? Trousers { get; set; }
         public int? Shoes { get; set; }
         public int? Gloves { get; set; }

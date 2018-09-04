@@ -162,6 +162,8 @@ namespace my_app_server.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.Sl).HasColumnName("SL");
+
+                entity.Property(e => e.Slbase).HasColumnName("SLbase");
             });
 
             modelBuilder.Entity<HerosLocations>(entity =>

@@ -22,9 +22,12 @@
     <Compile Include="Models\Backpack.cs" />
     <Compile Include="Models\Equipment.cs" />
     <Compile Include="Models\EquipmentExt.cs" />
+    <Compile Include="Models\Game\EquipmentControll.cs" />
     <Compile Include="Models\Game\Graph.cs" />
+    <Compile Include="Models\Game\HeroCalculator.cs" />
     <Compile Include="Models\Game\Location.cs" />
     <Compile Include="Models\Game\LocationHandler.cs" />
+    <Compile Include="Models\Global\Email.cs" />
     <Compile Include="Models\Global\HashClass.cs" />
     <Compile Include="Models\Global\PassedClasses.cs" />
     <Compile Include="Models\Global\Security.cs" />
@@ -32,6 +35,7 @@
     <Compile Include="Models\Heros.cs" />
     <Compile Include="Models\HerosExt.cs" />
     <Compile Include="Models\HerosLocations.cs" />
+    <Compile Include="Models\HerosLocationsExt.cs" />
     <Compile Include="Models\ItemsExt.cs" />
     <Compile Include="Models\Items.cs" />
     <Compile Include="Models\LocationsDb.cs" />
