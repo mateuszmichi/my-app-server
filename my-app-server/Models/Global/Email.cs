@@ -43,5 +43,31 @@ namespace my_app_server.Models
                 smtp.Send(message);
             }
         }
+        public static void SendContactEmail(string from, string title, string content)
+        {
+            var fromAddress = new MailAddress(from, from);
+            var toAddress = new MailAddress("shatteredplainsgame@gmail.com", "Shattered Plains Game");
+            const string fromPassword = "xPj667jk";
+            string subject = "[Contact Form] " + title;
+            string body = content;
+            var smtp = new SmtpClient
+            {
+                Host = "smtp.gmail.com",
+                Port = 587,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential("shatteredplainsgame@gmail.com", fromPassword),
+                Timeout = 20000
+            };
+            using (var message = new MailMessage(fromAddress, toAddress)
+            {
+                Subject = subject,
+                Body = body,
+            })
+            {
+                smtp.Send(message);
+            }
+        }
     }
 }
