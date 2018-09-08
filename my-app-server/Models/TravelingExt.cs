@@ -25,28 +25,22 @@ namespace my_app_server.Models
             return (this.IsReverse) ? this.Start : this.Target;
         }
 
-        public static explicit operator TravelResult(Traveling travel)
+        public TravelResult GenTravelResult(DateTime now)
         {
-            DateTime? rev = null;
-            if (travel.ReverseTime.HasValue)
+            double? rev = null;
+            if (this.ReverseTime.HasValue)
             {
-                rev = ChangeTimeToPureUTC(travel.ReverseTime.Value);
+                rev = (this.ReverseTime.Value - this.StartTime).TotalMilliseconds;
             }
             return (new TravelResult()
             {
-                EndTime = ChangeTimeToPureUTC(travel.EndTime),
-                IsReverse = travel.IsReverse,
-                ReverseTime = rev,
-                StartName = travel.StartName,
-                StartTime = ChangeTimeToPureUTC(travel.StartTime),
-                TargetName = travel.TargetName,
+                FullDuration = (this.EndTime - this.StartTime).TotalMilliseconds,
+                IsReverse = this.IsReverse,
+                ReverseDuration = rev,
+                StartName = this.StartName,
+                CurrentDuration = (now - this.StartTime).TotalMilliseconds,
+                TargetName = this.TargetName,
             });
-        }
-        private static DateTime ChangeTimeToPureUTC(DateTime time)
-        {
-            string s = time.ToString();
-            var dateTimeOffset = DateTimeOffset.Parse(s, null);
-            return dateTimeOffset.DateTime;
         }
     }
 }

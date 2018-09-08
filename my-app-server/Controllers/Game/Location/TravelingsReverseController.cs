@@ -77,7 +77,7 @@ namespace my_app_server.Controllers
                     }
                     Travel.IsReverse = true;
                     Travel.ReverseTime = now;
-                    TravelResult travelResult = (TravelResult)Travel;
+                    TravelResult travelResult = Travel.GenTravelResult(now);
                     try
                     {
                         await _context.SaveChangesAsync();

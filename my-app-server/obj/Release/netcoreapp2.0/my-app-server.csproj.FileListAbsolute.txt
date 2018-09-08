@@ -9,3 +9,4 @@ E:\Rtype\my-app-server\my-app-server\obj\Release\netcoreapp2.0\my-app-server.Ass
 E:\Rtype\my-app-server\my-app-server\obj\Release\netcoreapp2.0\my-app-server.dll
 E:\Rtype\my-app-server\my-app-server\obj\Release\netcoreapp2.0\my-app-server.pdb
 E:\Rtype\my-app-server\my-app-server\obj\Release\netcoreapp2.0\my-app-server.csprojAssemblyReference.cache
+E:\Rtype\my-app-server\my-app-server\obj\Release\netcoreapp2.0\UserSecretsAssemblyInfo.cs

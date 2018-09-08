@@ -106,7 +106,7 @@ namespace my_app_server.Controllers
                     };
                     hero.Status = 1;
                     _context.Traveling.Add(travel);
-                    TravelResult travelResult = (TravelResult)travel;
+                    TravelResult travelResult = travel.GenTravelResult(now);
                     try
                     {
                         await _context.SaveChangesAsync();

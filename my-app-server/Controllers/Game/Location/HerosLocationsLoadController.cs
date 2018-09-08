@@ -113,15 +113,19 @@ namespace my_app_server.Controllers
                         {
                             return BadRequest(new DataError("databaseErr", "Failed to remove travel."));
                         }
+                        LocationResult locationResult = description.GenLocalForm(state);
+                        return Ok(new { success = true, location = locationResult });
                     }
                     else
                     {
-                        TravelResult travelResult = (TravelResult)travel;
+                        return BadRequest(new DataError("LocationErr", "Travel is not finished"));
                     }
-
                 }
-                LocationResult locationResult = description.GenLocalForm(state);
-                return Ok(new { success = true, location = locationResult });
+                else
+                {
+                    return BadRequest(new DataError("LocationErr", "Hero is not in travel mode"));
+                }
+                
             }
             catch
             {

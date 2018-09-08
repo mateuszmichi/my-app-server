@@ -110,7 +110,7 @@ namespace my_app_server.Controllers
                     }
                     else
                     {
-                        statusData = (TravelResult)travel;
+                        statusData = travel.GenTravelResult(now);
                     }
                 }
                 LocationResult locationResult = description.GenLocalForm(state);

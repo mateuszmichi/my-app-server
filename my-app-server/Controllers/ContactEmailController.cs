@@ -12,7 +12,7 @@ namespace my_app_server.Controllers
     [Route("api/ContactEmail")]
     public class ContactEmailController : Controller
     {
-        public async Task<IActionResult> PostUsers([FromBody] EmailForm emailForm)
+        public IActionResult PostUsers([FromBody] EmailForm emailForm)
         {
             if (!ModelState.IsValid)
             {

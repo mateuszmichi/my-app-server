@@ -41,10 +41,10 @@ namespace my_app_server.Models
     {
         public string StartName { get; set; }
         public string TargetName { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
+        public double CurrentDuration { get; set; }
+        public double FullDuration { get; set; }
         public bool IsReverse { get; set; }
-        public DateTime? ReverseTime { get; set; }
+        public double? ReverseDuration { get; set; }
     }
     public class EquipmentResult
     {
