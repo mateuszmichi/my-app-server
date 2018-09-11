@@ -17,21 +17,26 @@ namespace my_app_server.Models
                 Level = hero.Lvl,
             });
         }
-        public static explicit operator HeroResult(Heros hero)
+        public HeroResult GenResult(EquipmentResult eqRes, LocationResult locRes, object statusData = null )
         {
             return (new HeroResult()
             {
-                Name = hero.Name,
-                Nickname = hero.Nickname,
-                Orders = hero.Orders,
-                Level = hero.Lvl,
-                Attributes = new int[8] { hero.Strength, hero.Endurance, hero.Dexterity, hero.Reflex, hero.Wisdom, hero.Intelligence, hero.Charisma, hero.Willpower },
-                Exp = hero.Experience,
-                Hp = hero.Hp,
-                //TODO calculate max hp
-                Hpmax = hero.Hp,
-                Sl = hero.Sl,
-                Slmax = hero.Sl,
+                Name = this.Name,
+                Nickname = this.Nickname,
+                Orders = this.Orders,
+                Level = this.Lvl,
+                Attributes = new int[8] { this.Strength, this.Endurance, this.Dexterity, this.Reflex, this.Wisdom, this.Intelligence, this.Charisma, this.Willpower },
+                Exp = this.Experience,
+                Hp = this.Hp,
+                Hpmax = HeroCalculator.BaseHP(this.Lvl),
+                Sl = this.Sl,
+                Slmax = this.Slbase,
+                Equipment = eqRes,
+                Location = locRes,
+                Status = this.Status,
+                StatusData = statusData,
+                IsInvitational = this.Invitational,
+                VelocityFactor = this.VelocityFactor,
             });
         }
     }
@@ -51,5 +56,11 @@ namespace my_app_server.Models
         public int Sl { get; set; }
         public int Slmax { get; set; }
         public int Exp { get; set; }
+        public EquipmentResult Equipment { get; set; }
+        public LocationResult Location { get; set; }
+        public int Status { get; set; }
+        public object StatusData { get; set; }
+        public int VelocityFactor { get; set; }
+        public bool IsInvitational { get; set; }
     }
 }

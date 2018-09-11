@@ -7,6 +7,7 @@ namespace my_app_server.Models
     {
         public Heros()
         {
+            Backpack = new HashSet<Backpack>();
             HerosLocations = new HashSet<HerosLocations>();
         }
 
@@ -17,7 +18,7 @@ namespace my_app_server.Models
         public int Experience { get; set; }
         public int Hp { get; set; }
         public int Sl { get; set; }
-        public int Money { get; set; }
+        public int Slbase { get; set; }
         public int Country { get; set; }
         public int Origin { get; set; }
         public int Strength { get; set; }
@@ -31,10 +32,15 @@ namespace my_app_server.Models
         public int Orders { get; set; }
         public int CurrentLocation { get; set; }
         public int Status { get; set; }
+        public int VelocityFactor { get; set; }
+        public bool Invitational { get; set; }
 
         public ActionToken ActionToken { get; set; }
+        public Equipment Equipment { get; set; }
+        public Healing Healing { get; set; }
         public Traveling Traveling { get; set; }
         public UsersHeros UsersHeros { get; set; }
+        public ICollection<Backpack> Backpack { get; set; }
         public ICollection<HerosLocations> HerosLocations { get; set; }
     }
 }

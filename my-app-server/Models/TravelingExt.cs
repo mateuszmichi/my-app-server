@@ -24,16 +24,22 @@ namespace my_app_server.Models
         {
             return (this.IsReverse) ? this.Start : this.Target;
         }
-        public static explicit operator TravelResult(Traveling travel)
+
+        public TravelResult GenTravelResult(DateTime now)
         {
+            double? rev = null;
+            if (this.ReverseTime.HasValue)
+            {
+                rev = (this.ReverseTime.Value - this.StartTime).TotalMilliseconds;
+            }
             return (new TravelResult()
             {
-                EndTime = travel.EndTime,
-                IsReverse = travel.IsReverse,
-                ReverseTime = travel.ReverseTime,
-                StartName = travel.StartName,
-                StartTime = travel.StartTime,
-                TargetName = travel.TargetName,
+                FullDuration = (this.EndTime - this.StartTime).TotalMilliseconds,
+                IsReverse = this.IsReverse,
+                ReverseDuration = rev,
+                StartName = this.StartName,
+                CurrentDuration = (now - this.StartTime).TotalMilliseconds,
+                TargetName = this.TargetName,
             });
         }
     }

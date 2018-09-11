@@ -39,9 +39,10 @@ namespace my_app_server
             });
 
             services.AddMvc();
-            
+
             string path = @"Server=DESKTOP-4906ULP\SQLEXPRESS;Database=my-app;Trusted_Connection=True;";
             //string path2 = @"Server=tcp:shatteredplains.database.windows.net,1433;Initial Catalog=shatteredDB;Persist Security Info=False;User ID=mateuszmichi;Password=Edek123$;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            //string path = @"Data Source=SQL6004.site4now.net;Initial Catalog=DB_A40773_shatteredplains;User Id=DB_A40773_shatteredplains_admin;Password=MiOnb55AS1;";
             services.AddDbContext<my_appContext>(options => options.UseSqlServer(path));
             
         }

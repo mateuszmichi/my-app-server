@@ -41,9 +41,55 @@ namespace my_app_server.Models
     {
         public string StartName { get; set; }
         public string TargetName { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
+        public double CurrentDuration { get; set; }
+        public double FullDuration { get; set; }
         public bool IsReverse { get; set; }
-        public DateTime? ReverseTime { get; set; }
+        public double? ReverseDuration { get; set; }
+    }
+    public class EquipmentResult
+    {
+        public ItemResult[] KnownItems { get; set; }
+        public int?[] Backpack { get; set; }
+        public int BackpackSize { get; set; }
+        public int? FirstHand { get; set; }
+        public int? SecondHand { get; set; }
+        public int? Armour { get; set; }
+        public int? Helmet { get; set; }
+        public int? Trousers { get; set; }
+        public int? Shoes { get; set; }
+        public int? Gloves { get; set; }
+        public int? Ring1 { get; set; }
+        public int? Ring2 { get; set; }
+        public int? Neckles { get; set; }
+        public int? Bracelet { get; set; }
+        public int Money { get; set; }
+    }
+    public class ItemResult
+    {
+        public int ItemID { get; set; }
+        public Items.ItemTypes ItemType { get; set; }
+        public string Name { get; set; }
+        public int[] Attributes { get; set; }
+        public int Lvl { get; set; }
+        public int Armour { get; set; }
+        public int DmgMin { get; set; }
+        public int DmgMax { get; set; }
+    }
+    public class EquipmentModifyResult
+    {
+        public EquipmentModification[] Removed { get; set; }
+        public EquipmentModification[] Added { get; set; }
+        public class EquipmentModification
+        {
+            public string Target { get; set; }
+            public int? ItemID { get; set; }
+        }
+    }
+    public class HealingResult
+    {
+        public double CurrentDuration { get; set; }
+        public double FullDuration { get; set; }
+        public int InitialHP { get; set; }
+        public int FinalHP { get; set; }
     }
 }

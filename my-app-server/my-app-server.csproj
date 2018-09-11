@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <UserSecretsId>f2990c90-f9f5-4705-beb7-111cb0bd7784</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,16 +20,27 @@
   <ItemGroup>
     <Compile Include="Models\ActionToken.cs" />
     <Compile Include="Models\ActionTokenExt.cs" />
+    <Compile Include="Models\Backpack.cs" />
+    <Compile Include="Models\Equipment.cs" />
+    <Compile Include="Models\EquipmentExt.cs" />
+    <Compile Include="Models\Game\EquipmentControll.cs" />
     <Compile Include="Models\Game\Graph.cs" />
+    <Compile Include="Models\Game\HeroCalculator.cs" />
     <Compile Include="Models\Game\Location.cs" />
     <Compile Include="Models\Game\LocationHandler.cs" />
+    <Compile Include="Models\Global\Email.cs" />
     <Compile Include="Models\Global\HashClass.cs" />
     <Compile Include="Models\Global\PassedClasses.cs" />
     <Compile Include="Models\Global\Security.cs" />
     <Compile Include="Models\Global\ServerOptions.cs" />
+    <Compile Include="Models\Healing.cs" />
+    <Compile Include="Models\HealingExt.cs" />
     <Compile Include="Models\Heros.cs" />
     <Compile Include="Models\HerosExt.cs" />
     <Compile Include="Models\HerosLocations.cs" />
+    <Compile Include="Models\HerosLocationsExt.cs" />
+    <Compile Include="Models\ItemsExt.cs" />
+    <Compile Include="Models\Items.cs" />
     <Compile Include="Models\LocationsDb.cs" />
     <Compile Include="Models\my_appContext.cs" />
     <Compile Include="Models\my_appContextExt.cs" />
@@ -43,6 +55,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\Game\Healing\" />
     <Folder Include="Controllers\Login\" />
     <Folder Include="Controllers\AccountManagement\" />
     <Folder Include="wwwroot\" />

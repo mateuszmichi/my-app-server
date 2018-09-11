@@ -11,6 +11,7 @@ namespace my_app_server.Models
         }
 
         public int LocationIdentifier { get; set; }
+        public int LocationGlobalType { get; set; }
         public string Sketch { get; set; }
 
         public ICollection<HerosLocations> HerosLocations { get; set; }
