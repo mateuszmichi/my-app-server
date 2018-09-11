@@ -90,8 +90,11 @@ namespace my_app_server.Controllers
             }
             try
             {
+                // TODO check location type
                 LocationDescription description = JsonConvert.DeserializeObject<LocationDescription>(descr.Sketch);
                 LocationState state = JsonConvert.DeserializeObject<LocationState>(location.Description);
+                description.LocationGlobalType = descr.LocationGlobalType;
+
                 if (hero.Status == 1)
                 {
                     Traveling travel = _context.Traveling.FirstOrDefault(e => e.HeroId == hero.HeroId);

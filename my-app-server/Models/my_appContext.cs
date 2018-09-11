@@ -9,6 +9,7 @@ namespace my_app_server.Models
         public virtual DbSet<ActionToken> ActionToken { get; set; }
         public virtual DbSet<Backpack> Backpack { get; set; }
         public virtual DbSet<Equipment> Equipment { get; set; }
+        public virtual DbSet<Healing> Healing { get; set; }
         public virtual DbSet<Heros> Heros { get; set; }
         public virtual DbSet<HerosLocations> HerosLocations { get; set; }
         public virtual DbSet<Items> Items { get; set; }
@@ -18,6 +19,15 @@ namespace my_app_server.Models
         public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<UsersHeros> UsersHeros { get; set; }
         public virtual DbSet<UserToken> UserToken { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer(@"Server=DESKTOP-4906ULP\SQLEXPRESS;Database=my-app;Trusted_Connection=True;");
+            }
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -135,6 +145,29 @@ namespace my_app_server.Models
                     .WithMany(p => p.EquipmentTrousersNavigation)
                     .HasForeignKey(d => d.Trousers)
                     .HasConstraintName("FK_Equipment_Items3");
+            });
+
+            modelBuilder.Entity<Healing>(entity =>
+            {
+                entity.HasKey(e => e.HeroId);
+
+                entity.Property(e => e.HeroId)
+                    .HasColumnName("HeroID")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EndTime).HasColumnType("datetime");
+
+                entity.Property(e => e.StartHp).HasColumnName("StartHP");
+
+                entity.Property(e => e.StartHpmax).HasColumnName("StartHPMax");
+
+                entity.Property(e => e.StartTime).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Hero)
+                    .WithOne(p => p.Healing)
+                    .HasForeignKey<Healing>(d => d.HeroId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Healing_Heros");
             });
 
             modelBuilder.Entity<Heros>(entity =>

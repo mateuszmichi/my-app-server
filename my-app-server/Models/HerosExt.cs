@@ -35,6 +35,8 @@ namespace my_app_server.Models
                 Location = locRes,
                 Status = this.Status,
                 StatusData = statusData,
+                IsInvitational = this.Invitational,
+                VelocityFactor = this.VelocityFactor,
             });
         }
     }
@@ -58,5 +60,7 @@ namespace my_app_server.Models
         public LocationResult Location { get; set; }
         public int Status { get; set; }
         public object StatusData { get; set; }
+        public int VelocityFactor { get; set; }
+        public bool IsInvitational { get; set; }
     }
 }

@@ -69,52 +69,9 @@ namespace my_app_server.Controllers
                 return BadRequest(new DataError("databaseErr", "Failed to update tokens."));
             }
 
-            var location = _context.HerosLocations.FirstOrDefault(e => (e.HeroId == hero.HeroId) && (e.LocationIdentifier == hero.CurrentLocation));
-            if (location == null)
-            {
-                return BadRequest(new DataError("LocationErr", "Location is not available."));
-            }
-            var descr = _context.LocationsDb.FirstOrDefault(e => e.LocationIdentifier == location.LocationIdentifier);
-            if (descr == null)
-            {
-                return BadRequest(new DataError("LocationErr", "LocationData is not available."));
-            }
             try
             {
-                object statusData = null;
-
-                // location generation
-                LocationDescription description = JsonConvert.DeserializeObject<LocationDescription>(descr.Sketch);
-                LocationState state = JsonConvert.DeserializeObject<LocationState>(location.Description);
-                if (hero.Status == 1)
-                {
-                    Traveling travel = _context.Traveling.FirstOrDefault(e => e.HeroId == hero.HeroId);
-                    if (travel == null)
-                    {
-                        throw new Exception("Traveling hero without travel in DB.");
-                    }
-                    if (travel.HasEnded(now))
-                    {
-                        state = description.MoveTo(travel.UpdatedLocationID(), state);
-                        hero.Status = 0;
-                        location.Description = JsonConvert.SerializeObject(state);
-                        _context.Traveling.Remove(travel);
-                        try
-                        {
-                            await _context.SaveChangesAsync();
-                        }
-                        catch (DbUpdateException)
-                        {
-                            return BadRequest(new DataError("databaseErr", "Failed to remove travel."));
-                        }
-                    }
-                    else
-                    {
-                        statusData = travel.GenTravelResult(now);
-                    }
-                }
-                LocationResult locationResult = description.GenLocalForm(state);
-
+                var heroStatus = LocationHandler.GetHeroGeneralStatus(_context, hero, now);
 
                 // equipment generation
                 var Equipment = _context.Equipment.FirstOrDefault(e => e.HeroId == hero.HeroId);
@@ -122,6 +79,7 @@ namespace my_app_server.Controllers
                 {
                     return BadRequest(new DataError("equipmentErr", "Hero is without equipment."));
                 }
+
                 List<int?> used = new List<int?>
                 {
                     Equipment.Armour, Equipment.Bracelet, Equipment.FirstHand, Equipment.Gloves, Equipment.Helmet, Equipment.Neckles, Equipment.Ring1, Equipment.Ring2,
@@ -138,11 +96,11 @@ namespace my_app_server.Controllers
 
                 EquipmentResult EQ = Equipment.GenResult(ItemsInUse.ToArray(), Backpack.ToList());
 
-                return Ok(new { success = true, actiontoken = tokenResult, hero = hero.GenResult(EQ,locationResult, statusData) });
+                return Ok(new { success = true, actiontoken = tokenResult, hero = hero.GenResult(EQ,heroStatus.Location, heroStatus.StatusData) });
             }
-            catch
+            catch (Exception e)
             {
-                return BadRequest(new DataError("LocationErr", "Location is not available."));
+                return BadRequest(new DataError("statusErr", e.Message));
             }
         }
 

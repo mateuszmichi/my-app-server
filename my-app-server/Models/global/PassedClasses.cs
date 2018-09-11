@@ -85,4 +85,11 @@ namespace my_app_server.Models
             public int? ItemID { get; set; }
         }
     }
+    public class HealingResult
+    {
+        public double CurrentDuration { get; set; }
+        public double FullDuration { get; set; }
+        public int InitialHP { get; set; }
+        public int FinalHP { get; set; }
+    }
 }

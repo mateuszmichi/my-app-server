@@ -80,6 +80,8 @@ namespace my_app_server.Controllers
                 Strength = data.Data.Attributes[0],
                 Willpower = data.Data.Attributes[7],
                 Wisdom = data.Data.Attributes[4],
+                Invitational = true,
+                VelocityFactor = 1,
             };
             UsersHeros userheros = new UsersHeros()
             {

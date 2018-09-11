@@ -15,6 +15,7 @@ namespace my_app_server.Models
         public int InitialNode { get; set; }
         public int TravelScale { get; set; }
         public int LocationID { get; set; }
+        public int LocationGlobalType { get; set; }
 
         public LocationResult GenLocalForm(LocationState state)
         {
@@ -27,7 +28,7 @@ namespace my_app_server.Models
             int counter = 0;
             Dictionary<int, int> dict = new Dictionary<int, int>();
             List<Node> seenNodes = new List<Node>();
-            List<MainNode> seenMains = new List<MainNode>();
+            List<MainNodeResult> seenMains = new List<MainNodeResult>();
             for (int i = 0; i < this.Nodes.Length; i++)
             {
                 if (state.IsDiscovered[i])
@@ -40,11 +41,12 @@ namespace my_app_server.Models
             {
                 if (state.IsDiscovered[main.NodeID])
                 {
-                    MainNode nowa = new MainNode()
+                    MainNodeResult nowa = new MainNodeResult()
                     {
                         LocationType = (state.IsVisited[main.NodeID]) ? main.LocationType : LOCATIONS.UNKNOWN,
                         Name = main.Name,
-                        NodeID = dict[main.NodeID]
+                        NodeID = dict[main.NodeID],
+                        
                     };
                     seenMains.Add(nowa);
                 }
@@ -59,6 +61,7 @@ namespace my_app_server.Models
             }
             return new LocationResult()
             {
+                LocationGlobalType = this.LocationGlobalType,
                 CurrentLocation = dict[state.CurrentLocation],
                 Edges = seenEdges.ToArray(),
                 MainNodes = seenMains.ToArray(),
@@ -146,8 +149,22 @@ namespace my_app_server.Models
         public int NodeID { get; set; }
         public LOCATIONS LocationType { get; set; }
         public string Name { get; set; }
-
-
+        public int Data { get; set; }
+        public static explicit operator MainNodeResult(MainNode node)
+        {
+            return new MainNodeResult()
+            {
+                NodeID = node.NodeID,
+                LocationType = node.LocationType,
+                Name = node.Name,
+            };
+        }
+    }
+    public class MainNodeResult
+    {
+        public int NodeID { get; set; }
+        public LOCATIONS LocationType { get; set; }
+        public string Name { get; set; }
     }
     public class Node
     {
@@ -172,11 +189,12 @@ namespace my_app_server.Models
     }
     public class LocationResult
     {
+        public int LocationGlobalType { get; set; }
         public int CurrentLocation { get; set; }
         public string LocationName { get; set; }
         public int TravelScale { get; set; }
         public Node[] Nodes { get; set; }
-        public MainNode[] MainNodes { get; set; }
+        public MainNodeResult[] MainNodes { get; set; }
         public Edge[] Edges { get; set; }
         public int LocationID { get; set; }
     }
@@ -185,6 +203,8 @@ namespace my_app_server.Models
         UNKNOWN,
         LANDLOCATION,
         GLOBALLOCATION,
+        SAFELOCATION,
+        LOCALLOCATION,
     }
     public enum LOCATION_OPTIONS
     {

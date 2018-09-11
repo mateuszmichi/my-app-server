@@ -33,6 +33,8 @@
     <Compile Include="Models\Global\PassedClasses.cs" />
     <Compile Include="Models\Global\Security.cs" />
     <Compile Include="Models\Global\ServerOptions.cs" />
+    <Compile Include="Models\Healing.cs" />
+    <Compile Include="Models\HealingExt.cs" />
     <Compile Include="Models\Heros.cs" />
     <Compile Include="Models\HerosExt.cs" />
     <Compile Include="Models\HerosLocations.cs" />
@@ -53,6 +55,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\Game\Healing\" />
     <Folder Include="Controllers\Login\" />
     <Folder Include="Controllers\AccountManagement\" />
     <Folder Include="wwwroot\" />

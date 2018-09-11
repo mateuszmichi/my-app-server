@@ -32,9 +32,12 @@ namespace my_app_server.Models
         public int Orders { get; set; }
         public int CurrentLocation { get; set; }
         public int Status { get; set; }
+        public int VelocityFactor { get; set; }
+        public bool Invitational { get; set; }
 
         public ActionToken ActionToken { get; set; }
         public Equipment Equipment { get; set; }
+        public Healing Healing { get; set; }
         public Traveling Traveling { get; set; }
         public UsersHeros UsersHeros { get; set; }
         public ICollection<Backpack> Backpack { get; set; }

@@ -11,19 +11,19 @@ using Newtonsoft.Json;
 namespace my_app_server.Controllers
 {
     [Produces("application/json")]
-    [Route("api/TravelingsStart")]
-    public class TravelingsStartController : Controller
+    [Route("api/LocationAction")]
+    public class LocationActionController : Controller
     {
         private readonly my_appContext _context;
 
-        public TravelingsStartController(my_appContext context)
+        public LocationActionController(my_appContext context)
         {
             _context = context;
         }
 
-        // POST: api/TravelingsStart
+        // POST: api/LocationAction
         [HttpPost]
-        public async Task<IActionResult> PostTraveling([FromBody] PassedGameData<int> passedData)
+        public async Task<IActionResult> PostLocationAction([FromBody] PassedGameData<int> passedData)
         {
             if (!ModelState.IsValid)
             {
@@ -67,7 +67,7 @@ namespace my_app_server.Controllers
                     gametoken.UpdateToken(now);
                 }
             }
-            // if can go there
+            // now do your stuff...
             if (hero.Status == 0)
             {
                 var location = _context.HerosLocations.FirstOrDefault(e => (e.HeroId == hero.HeroId) && (e.LocationIdentifier == hero.CurrentLocation));
@@ -87,37 +87,54 @@ namespace my_app_server.Controllers
                     LocationState state = JsonConvert.DeserializeObject<LocationState>(location.Description);
                     description.LocationGlobalType = descr.LocationGlobalType;
 
-                    int GlobalNodeID = description.GlobalMainNodeID(passedData.Data, state);
-                    if(GlobalNodeID == state.CurrentLocation)
+                    var CurrentNode = description.MainNodes.FirstOrDefault(e => e.NodeID == state.CurrentLocation);
+                    
+                    if(CurrentNode.Data == -1)
                     {
-                        throw new Exception("Moving nowhere");
+                        try
+                        {
+                            await _context.SaveChangesAsync();
+                        }
+                        catch (DbUpdateException)
+                        {
+                            return BadRequest(new DataError("databaseErr", "Failed to remember travel."));
+                        }
+                        return BadRequest(new DataError("notImplementedErr", "This feature has not been implemented yet. We are working on it!"));
                     }
-                    AstarResult astar = LocationHandler.DistanceToMove(description, state, passedData.Data);
-                    double TravelTime = LocationHandler.TimeTravel(astar.Distance, description.TravelScale,18*hero.VelocityFactor);
-
-                    Traveling travel = new Traveling()
-                    {
-                        EndTime = now.AddSeconds(TravelTime),
-                        HeroId = hero.HeroId,
-                        IsReverse = false,
-                        ReverseTime = null,
-                        Start = state.CurrentLocation,
-                        StartName = description.MainNodes.First(e => e.NodeID == state.CurrentLocation).Name,
-                        StartTime = now,
-                        Target = GlobalNodeID,
-                        TargetName = description.MainNodes.First(e => e.NodeID == GlobalNodeID).Name,
-                    };
-                    hero.Status = 1;
-                    _context.Traveling.Add(travel);
-                    TravelResult travelResult = travel.GenTravelResult(now);
                     try
                     {
-                        await _context.SaveChangesAsync();
-                        return Ok(new { success = true, travel = travelResult });
+                        if(!LocationHandler.OptionsForLocation.ContainsKey(CurrentNode.LocationType))
+                        {
+                            throw new Exception();
+                        }
+                        if (!LocationHandler.LocationTypeFunctions.ContainsKey(LocationHandler.OptionsForLocation[CurrentNode.LocationType][passedData.Data]))
+                        {
+                            throw new Exception();
+                        }
+                        var func = LocationHandler.LocationTypeFunctions[LocationHandler.OptionsForLocation[CurrentNode.LocationType][passedData.Data]];
+                        func(_context, hero, CurrentNode.Data);
+                        try
+                        {
+                            await _context.SaveChangesAsync();
+                        }
+                        catch (DbUpdateException)
+                        {
+                            return BadRequest(new DataError("databaseErr", "Failed to remember action."));
+                        }
+                        // load new hero status
+                        try
+                        {
+                            var heroStatus = LocationHandler.GetHeroGeneralStatus(_context, hero, now);
+                            return Ok(new { success = true, location = heroStatus.Location, heroStatus.StatusData });
+                        }
+                        catch (Exception e)
+                        {
+                            return BadRequest(new DataError("statusErr", e.Message));
+                        }
                     }
-                    catch (DbUpdateException)
+                    catch
                     {
-                        return BadRequest(new DataError("databaseErr", "Failed to remember travel."));
+                        return BadRequest(new DataError("notImplementedErr", "This feature has not been implemented yet. We are working on it!"));
                     }
                 }
                 catch
@@ -127,7 +144,7 @@ namespace my_app_server.Controllers
             }
             else
             {
-                return BadRequest(new DataError("LocationErr", "Hero is not able to travel."));
+                return BadRequest(new DataError("LocationErr", "Hero is not able to change state."));
             }
         }
     }
