@@ -67,12 +67,14 @@ namespace my_app_server.Controllers
             var delherostraveling = _context.Traveling.Join(delheros, e => e.HeroId, f => f.HeroId, (a, b) => a);
             var delherosequipment = _context.Equipment.Join(delheros, e => e.HeroId, f => f.HeroId, (a, b) => a);
             var delherosbackpack = _context.Backpack.Join(delheros, e => e.HeroId, f => f.HeroId, (a, b) => a);
+            var delheroshealing = _context.Healing.Join(delheros, e => e.HeroId, f => f.HeroId, (a, b) => a);
 
             if (delactiontokens.Count() > 0) _context.ActionToken.RemoveRange(delactiontokens);
             if (delheroslocations.Count() > 0) _context.HerosLocations.RemoveRange(delheroslocations);
             if (delherostraveling.Count() > 0) _context.Traveling.RemoveRange(delherostraveling);
             if (delherosequipment.Count() > 0) _context.Equipment.RemoveRange(delherosequipment);
             if (delherosbackpack.Count() > 0) _context.Backpack.RemoveRange(delherosbackpack);
+            if (delheroshealing.Count() > 0) _context.Healing.RemoveRange(delheroshealing);
 
             if (usersheros.Count() > 0) _context.UsersHeros.RemoveRange(usersheros);
             if(delheros.Count() > 0) _context.Heros.RemoveRange(delheros);
