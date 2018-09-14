@@ -90,43 +90,87 @@ namespace my_app_server.Controllers
             }
             try
             {
-                // TODO check location type
-                LocationDescription description = JsonConvert.DeserializeObject<LocationDescription>(descr.Sketch);
-                LocationState state = JsonConvert.DeserializeObject<LocationState>(location.Description);
-                description.LocationGlobalType = descr.LocationGlobalType;
-
-                if (hero.Status == 1)
+                // TODO check location type -> vitual class or what?
+                int LocationType = descr.LocationGlobalType;
+                if(LocationType != 2)
                 {
-                    Traveling travel = _context.Traveling.FirstOrDefault(e => e.HeroId == hero.HeroId);
-                    if (travel == null)
+                    LocationDescription description = JsonConvert.DeserializeObject<LocationDescription>(descr.Sketch);
+                    LocationState state = JsonConvert.DeserializeObject<LocationState>(location.Description);
+                    description.LocationGlobalType = LocationType;
+
+                    if (hero.Status == 1)
                     {
-                        throw new Exception("Traveling hero without travel in DB.");
-                    }
-                    if (travel.HasEnded(now))
-                    {
-                        state = description.MoveTo(travel.UpdatedLocationID(), state);
-                        hero.Status = 0;
-                        location.Description = JsonConvert.SerializeObject(state);
-                        _context.Traveling.Remove(travel);
-                        try
+                        Traveling travel = _context.Traveling.FirstOrDefault(e => e.HeroId == hero.HeroId);
+                        if (travel == null)
                         {
-                            await _context.SaveChangesAsync();
+                            throw new Exception("Traveling hero without travel in DB.");
                         }
-                        catch (DbUpdateException)
+                        if (travel.HasEnded(now))
                         {
-                            return BadRequest(new DataError("databaseErr", "Failed to remove travel."));
+                            state = description.MoveTo(travel.UpdatedLocationID(), state);
+                            hero.Status = 0;
+                            location.Description = JsonConvert.SerializeObject(state);
+                            _context.Traveling.Remove(travel);
+                            try
+                            {
+                                await _context.SaveChangesAsync();
+                            }
+                            catch (DbUpdateException)
+                            {
+                                return BadRequest(new DataError("databaseErr", "Failed to remove travel."));
+                            }
+                            LocationResult<MainNodeResult> locationResult = description.GenLocalForm(state);
+                            return Ok(new { success = true, location = locationResult });
                         }
-                        LocationResult locationResult = description.GenLocalForm(state);
-                        return Ok(new { success = true, location = locationResult });
+                        else
+                        {
+                            return BadRequest(new DataError("LocationErr", "Travel is not finished"));
+                        }
                     }
                     else
                     {
-                        return BadRequest(new DataError("LocationErr", "Travel is not finished"));
+                        return BadRequest(new DataError("LocationErr", "Hero is not in travel mode"));
                     }
                 }
                 else
                 {
-                    return BadRequest(new DataError("LocationErr", "Hero is not in travel mode"));
+                    InstanceDescription description = JsonConvert.DeserializeObject<InstanceDescription>(descr.Sketch);
+                    InstanceState state = JsonConvert.DeserializeObject<InstanceState>(location.Description);
+                    description.LocationGlobalType = LocationType;
+
+                    if (hero.Status == 1)
+                    {
+                        Traveling travel = _context.Traveling.FirstOrDefault(e => e.HeroId == hero.HeroId);
+                        if (travel == null)
+                        {
+                            throw new Exception("Traveling hero without travel in DB.");
+                        }
+                        if (travel.HasEnded(now))
+                        {
+                            state = description.MoveTo(travel.UpdatedLocationID(), state);
+                            hero.Status = 0;
+                            location.Description = JsonConvert.SerializeObject(state);
+                            _context.Traveling.Remove(travel);
+                            try
+                            {
+                                await _context.SaveChangesAsync();
+                            }
+                            catch (DbUpdateException)
+                            {
+                                return BadRequest(new DataError("databaseErr", "Failed to remove travel."));
+                            }
+                            LocationResult<InstanceNodeResult> locationResult = description.GenLocalForm(state);
+                            return Ok(new { success = true, location = locationResult });
+                        }
+                        else
+                        {
+                            return BadRequest(new DataError("LocationErr", "Travel is not finished"));
+                        }
+                    }
+                    else
+                    {
+                        return BadRequest(new DataError("LocationErr", "Hero is not in travel mode"));
+                    }
                 }
                 
             }

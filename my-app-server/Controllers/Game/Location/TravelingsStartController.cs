@@ -83,17 +83,50 @@ namespace my_app_server.Controllers
                 try
                 {
                     // TODO check location type
-                    LocationDescription description = JsonConvert.DeserializeObject<LocationDescription>(descr.Sketch);
-                    LocationState state = JsonConvert.DeserializeObject<LocationState>(location.Description);
-                    description.LocationGlobalType = descr.LocationGlobalType;
+                    AstarResult astar = null;
+                    int TravelScale = 0;
+                    int Start = -1;
+                    string StartName = "";
+                    int Target = -1;
+                    string TargetName = "";
 
-                    int GlobalNodeID = description.GlobalMainNodeID(passedData.Data, state);
-                    if(GlobalNodeID == state.CurrentLocation)
-                    {
-                        throw new Exception("Moving nowhere");
+                    int LocationType = descr.LocationGlobalType;
+                    if (LocationType != 2) {
+                        LocationDescription description = JsonConvert.DeserializeObject<LocationDescription>(descr.Sketch);
+                        LocationState state = JsonConvert.DeserializeObject<LocationState>(location.Description);
+                        description.LocationGlobalType = descr.LocationGlobalType;
+
+                        int GlobalNodeID = description.GlobalMainNodeID(passedData.Data, state);
+                        if (GlobalNodeID == state.CurrentLocation)
+                        {
+                            throw new Exception("Moving nowhere");
+                        }
+                        astar = LocationHandler.DistanceToMove(description, state, passedData.Data);
+                        TravelScale = description.TravelScale;
+                        Start = state.CurrentLocation;
+                        StartName = description.MainNodes.First(e => e.NodeID == state.CurrentLocation).Name;
+                        Target = GlobalNodeID;
+                        TargetName = description.MainNodes.First(e => e.NodeID == GlobalNodeID).Name;
                     }
-                    AstarResult astar = LocationHandler.DistanceToMove(description, state, passedData.Data);
-                    double TravelTime = LocationHandler.TimeTravel(astar.Distance, description.TravelScale,18*hero.VelocityFactor);
+                    else
+                    {
+                        InstanceDescription description = JsonConvert.DeserializeObject<InstanceDescription>(descr.Sketch);
+                        InstanceState state = JsonConvert.DeserializeObject<InstanceState>(location.Description);
+                        description.LocationGlobalType = descr.LocationGlobalType;
+
+                        int GlobalNodeID = description.GlobalMainNodeID(passedData.Data, state);
+                        if (GlobalNodeID == state.CurrentLocation)
+                        {
+                            throw new Exception("Moving nowhere");
+                        }
+                        astar = LocationHandler.DistanceToMove(description, state, passedData.Data);
+                        TravelScale = description.TravelScale;
+                        Start = state.CurrentLocation;
+                        Target = GlobalNodeID;
+                        TargetName = passedData.Data.ToString();
+                    }
+                    
+                    double TravelTime = LocationHandler.TimeTravel(astar.Distance, TravelScale,18*hero.VelocityFactor);
 
                     Traveling travel = new Traveling()
                     {
@@ -101,11 +134,11 @@ namespace my_app_server.Controllers
                         HeroId = hero.HeroId,
                         IsReverse = false,
                         ReverseTime = null,
-                        Start = state.CurrentLocation,
-                        StartName = description.MainNodes.First(e => e.NodeID == state.CurrentLocation).Name,
+                        Start = Start,
+                        StartName = StartName,
                         StartTime = now,
-                        Target = GlobalNodeID,
-                        TargetName = description.MainNodes.First(e => e.NodeID == GlobalNodeID).Name,
+                        Target = Target,
+                        TargetName = TargetName,
                     };
                     hero.Status = 1;
                     _context.Traveling.Add(travel);

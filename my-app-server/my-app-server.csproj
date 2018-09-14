@@ -26,6 +26,7 @@
     <Compile Include="Models\Game\EquipmentControll.cs" />
     <Compile Include="Models\Game\Graph.cs" />
     <Compile Include="Models\Game\HeroCalculator.cs" />
+    <Compile Include="Models\Game\Instance.cs" />
     <Compile Include="Models\Game\Location.cs" />
     <Compile Include="Models\Game\LocationHandler.cs" />
     <Compile Include="Models\Global\Email.cs" />
@@ -55,8 +56,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\Game\Healing\" />
-    <Folder Include="Controllers\Login\" />
     <Folder Include="Controllers\AccountManagement\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>

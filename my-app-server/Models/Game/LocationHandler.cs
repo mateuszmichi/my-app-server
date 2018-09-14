@@ -11,7 +11,13 @@ namespace my_app_server.Models
     {
         public static AstarResult DistanceToMove(LocationDescription description, LocationState state, int LocalTarget)
         {
-            LocationResult res = description.GenLocalForm(state);
+            LocationResult<MainNodeResult> res = description.GenLocalForm(state);
+            Graph<Node> graph = new Graph<Node>(res.Nodes, res.Edges, Node.HeuristicDistance);
+            return graph.Astar(res.CurrentLocation, LocalTarget);
+        }
+        public static AstarResult DistanceToMove(InstanceDescription description, InstanceState state, int LocalTarget)
+        {
+            LocationResult<InstanceNodeResult> res = description.GenLocalForm(state);
             Graph<Node> graph = new Graph<Node>(res.Nodes, res.Edges, Node.HeuristicDistance);
             return graph.Astar(res.CurrentLocation, LocalTarget);
         }
@@ -30,6 +36,7 @@ namespace my_app_server.Models
         public static Dictionary<LOCATION_OPTIONS, Func<my_appContext, Heros, int, int>> LocationTypeFunctions = new Dictionary<LOCATION_OPTIONS, Func<my_appContext, Heros, int, int>>(){
             {LOCATION_OPTIONS.TOGLOBAL, MoveHeroToGlobal},
             {LOCATION_OPTIONS.TOLOCAL, MoveHeroToLocation},
+            {LOCATION_OPTIONS.TOINSTANCE, MoveHeroToLocation},
         };
         public static int MoveHeroToGlobal (my_appContext _context, Heros hero, int locationID)
         {
@@ -51,6 +58,17 @@ namespace my_app_server.Models
             hero.CurrentLocation = locationID;
             return 0;
         }
+        public static Dictionary<INSTANCES, List<INSTANCE_OPTIONS>> OptionsForInstances = new Dictionary<INSTANCES, List<INSTANCE_OPTIONS>>()
+        {
+            {INSTANCES.ENTRANCE, new List<INSTANCE_OPTIONS>() { INSTANCE_OPTIONS.TOLOCAL} },
+            {INSTANCES.ENEMY, new List<INSTANCE_OPTIONS>() { INSTANCE_OPTIONS.TOFIGHT} },
+        };
+        public static Dictionary<INSTANCE_OPTIONS, Func<my_appContext, Heros, int, int>> InstanceTypeFunctions = new Dictionary<INSTANCE_OPTIONS, Func<my_appContext, Heros, int, int>>(){
+            {INSTANCE_OPTIONS.TOLOCAL, MoveHeroToLocation},
+            //{INSTANCE_OPTIONS.TOLOCAL, MoveHeroToLocation},
+        };
+
+
         public static GeneralStatus GetHeroGeneralStatus(my_appContext _context, Heros hero, DateTime now)
         {
             object statusData = null;
@@ -64,37 +82,80 @@ namespace my_app_server.Models
             {
                 throw new Exception("LocationData is not available.");
             }
-            LocationDescription description = JsonConvert.DeserializeObject<LocationDescription>(descr.Sketch);
-            LocationState state = JsonConvert.DeserializeObject<LocationState>(location.Description);
-            description.LocationGlobalType = descr.LocationGlobalType;
+            // TODO Location Type
+            object locationResult = new LocationResult<object>();
 
-            if (hero.Status == 1)
+            int LocationType = descr.LocationGlobalType;
+            if (LocationType != 2)
             {
-                Traveling travel = _context.Traveling.FirstOrDefault(e => e.HeroId == hero.HeroId);
-                if (travel == null)
+                LocationDescription description = JsonConvert.DeserializeObject<LocationDescription>(descr.Sketch);
+                LocationState state = JsonConvert.DeserializeObject<LocationState>(location.Description);
+                description.LocationGlobalType = descr.LocationGlobalType;
+
+                if (hero.Status == 1)
                 {
-                    throw new Exception("Traveling hero without travel in DB.");
-                }
-                if (travel.HasEnded(now))
-                {
-                    state = description.MoveTo(travel.UpdatedLocationID(), state);
-                    hero.Status = 0;
-                    location.Description = JsonConvert.SerializeObject(state);
-                    _context.Traveling.Remove(travel);
-                    try
+                    Traveling travel = _context.Traveling.FirstOrDefault(e => e.HeroId == hero.HeroId);
+                    if (travel == null)
                     {
-                        _context.SaveChanges();
+                        throw new Exception("Traveling hero without travel in DB.");
                     }
-                    catch (DbUpdateException)
+                    if (travel.HasEnded(now))
                     {
-                        throw new Exception("Failed to remove travel.");
+                        state = description.MoveTo(travel.UpdatedLocationID(), state);
+                        hero.Status = 0;
+                        location.Description = JsonConvert.SerializeObject(state);
+                        _context.Traveling.Remove(travel);
+                        try
+                        {
+                            _context.SaveChanges();
+                        }
+                        catch (DbUpdateException)
+                        {
+                            throw new Exception("Failed to remove travel.");
+                        }
+                    }
+                    else
+                    {
+                        statusData = travel.GenTravelResult(now);
                     }
                 }
-                else
+                locationResult = description.GenLocalForm(state);
+            } else
+            {
+                InstanceDescription description = JsonConvert.DeserializeObject<InstanceDescription>(descr.Sketch);
+                InstanceState state = JsonConvert.DeserializeObject<InstanceState>(location.Description);
+                description.LocationGlobalType = descr.LocationGlobalType;
+
+                if (hero.Status == 1)
                 {
-                    statusData = travel.GenTravelResult(now);
+                    Traveling travel = _context.Traveling.FirstOrDefault(e => e.HeroId == hero.HeroId);
+                    if (travel == null)
+                    {
+                        throw new Exception("Traveling hero without travel in DB.");
+                    }
+                    if (travel.HasEnded(now))
+                    {
+                        state = description.MoveTo(travel.UpdatedLocationID(), state);
+                        hero.Status = 0;
+                        location.Description = JsonConvert.SerializeObject(state);
+                        _context.Traveling.Remove(travel);
+                        try
+                        {
+                            _context.SaveChanges();
+                        }
+                        catch (DbUpdateException)
+                        {
+                            throw new Exception("Failed to remove travel.");
+                        }
+                    }
+                    else
+                    {
+                        statusData = travel.GenTravelResult(now);
+                    }
                 }
+                locationResult = description.GenLocalForm(state);
             }
+                
             if(hero.Status == 2)
             {
                 Healing heal = _context.Healing.FirstOrDefault(e => e.HeroId == hero.HeroId);
@@ -124,7 +185,6 @@ namespace my_app_server.Models
                     statusData = heal.GenHealingResult(now);
                 }
             }
-            LocationResult locationResult = description.GenLocalForm(state);
 
             return new GeneralStatus()
             {
@@ -135,7 +195,7 @@ namespace my_app_server.Models
         }
         public class GeneralStatus
         {
-            public LocationResult Location { get; set; }
+            public object Location { get; set; }
             public int HeroStatus { get; set; }
             public object StatusData { get; set; }
         }
