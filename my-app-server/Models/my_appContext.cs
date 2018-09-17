@@ -88,7 +88,11 @@ namespace my_app_server.Models
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Loot).IsUnicode(false);
+                entity.Property(e => e.GraphicsId).HasColumnName("GraphicsID");
+
+                entity.Property(e => e.Loot)
+                    .IsRequired()
+                    .IsUnicode(false);
 
                 entity.Property(e => e.MaxHp).HasColumnName("MaxHP");
             });

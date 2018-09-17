@@ -23,7 +23,7 @@ namespace my_app_server.Controllers
 
         // POST: api/EndFighting
         [HttpPost]
-        public async Task<IActionResult> PostFighting([FromBody] PassedGameData<int?> passedData)
+        public async Task<IActionResult> PostFighting([FromBody] PassedGameData<bool> passedData)
         {
             if (!ModelState.IsValid)
             {
@@ -87,7 +87,7 @@ namespace my_app_server.Controllers
                 if (hero.Hp > 0)
                 {
                     hero.Status = 0;
-                    if (fight.Loot.HasValue)
+                    if (fight.Loot.HasValue && passedData.Data)
                     {
                         var Item = _context.Items.FirstOrDefault(e => e.ItemId == fight.Loot.Value);
                         if (Item == null)

@@ -26,7 +26,7 @@ namespace my_app_server.Models
             }
             return new FightResult()
             {
-                EnemyID = enemy.EnemyId,
+                EnemyID = enemy.GraphicsId,
                 EnemyLevel = enemy.Lvl,
                 Hp = this.EnemyHp,
                 HpMax = enemy.MaxHp,

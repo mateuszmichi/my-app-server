@@ -11,6 +11,7 @@ namespace my_app_server.Models
         }
 
         public int EnemyId { get; set; }
+        public int GraphicsId { get; set; }
         public string EnemyName { get; set; }
         public int Lvl { get; set; }
         public int MaxHp { get; set; }
