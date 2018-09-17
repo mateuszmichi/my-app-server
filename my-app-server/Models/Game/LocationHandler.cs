@@ -127,8 +127,11 @@ namespace my_app_server.Models
                 InstanceState state = JsonConvert.DeserializeObject<InstanceState>(location.Description);
                 description.LocationGlobalType = descr.LocationGlobalType;
 
-                state.IsCleared[state.CurrentLocation] = true;
-                location.Description = JsonConvert.SerializeObject(state);
+                if (hero.Hp > 0)
+                {
+                    state.IsCleared[state.CurrentLocation] = true;
+                    location.Description = JsonConvert.SerializeObject(state);
+                }
 
                 return description.GenLocalForm(state);
             }

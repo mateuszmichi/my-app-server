@@ -90,7 +90,7 @@ namespace my_app_server.Controllers
                     if (fight.Loot.HasValue)
                     {
                         var Item = _context.Items.FirstOrDefault(e => e.ItemId == fight.Loot.Value);
-                        if(Item == null)
+                        if (Item == null)
                         {
                             return BadRequest(new DataError("itemErr", "Looted item not found."));
                         }
@@ -203,9 +203,9 @@ namespace my_app_server.Controllers
                     {
                         return BadRequest(new DataError("databaseErr", "Failed to update tokens."));
                     }
-                    return Ok(new { success = true, heroStatus = hero.Status, newHP = hero.Hp, newHPmax = HeroCalculator.BaseHP(hero.Lvl), newLvl = hero.Lvl, newExp = hero.Experience, location, statusData, added = Added.ToArray(), newItems = newItems.ToArray()});
+                    return Ok(new { success = true, heroStatus = hero.Status, newHP = hero.Hp, newHPmax = HeroCalculator.BaseHP(hero.Lvl), newLvl = hero.Lvl, newExp = hero.Experience, location, statusData, added = Added.ToArray(), newItems = newItems.ToArray() });
                 }
-                catch(OperationException e)
+                catch (OperationException e)
                 {
                     return BadRequest(new DataError(e.ErrorClass, e.Message));
                 }

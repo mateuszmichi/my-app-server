@@ -81,7 +81,7 @@ namespace my_app_server.Models
                     AttackType aType = (rand == 0) ? AttackType.Strong : AttackType.Normal;
                     dmg = DmgDealt(vict, ally, aType, armourMod);
                     log.Add(new BattleLog() { Damage = dmg, Target = 0, AttackType = aType });
-                    if (dmg > hero.Hp)
+                    if (dmg >= hero.Hp)
                     {
                         initial.IsOver = true;
                         hero.Hp = 0;
