@@ -73,8 +73,8 @@ namespace my_app_server.Models
         }
         public InstanceState MoveTo(int newNode, InstanceState initialState)
         {
-            List<int> mapper = GenerateDictionary(initialState);
-            int globalNewNode = mapper[newNode];
+            // List<int> mapper = GenerateDictionary(initialState);
+            int globalNewNode = newNode;
             InstanceState state = new InstanceState()
             {
                 CurrentLocation = globalNewNode,

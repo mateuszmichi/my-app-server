@@ -125,6 +125,10 @@ namespace my_app_server.Controllers
                                 return BadRequest(new DataError("databaseErr", "Failed to remember action."));
                             }
                         }
+                        catch(OperationException e)
+                        {
+                            return BadRequest(new DataError(e.ErrorClass, e.Message));
+                        }
                         catch
                         {
                             return BadRequest(new DataError("notImplementedErr", "This feature has not been implemented yet. We are working on it!"));
@@ -180,7 +184,7 @@ namespace my_app_server.Controllers
                     try
                     {
                         var heroStatus = LocationHandler.GetHeroGeneralStatus(_context, hero, now);
-                        return Ok(new { success = true, location = heroStatus.Location, heroStatus.StatusData });
+                        return Ok(new { success = true, location = heroStatus.Location,statusData = heroStatus.StatusData,heroStatus = heroStatus.HeroStatus });
                     }
                     catch (Exception e)
                     {

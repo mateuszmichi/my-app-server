@@ -37,6 +37,7 @@ namespace my_app_server.Models
 
         public ActionToken ActionToken { get; set; }
         public Equipment Equipment { get; set; }
+        public Fighting Fighting { get; set; }
         public Healing Healing { get; set; }
         public Traveling Traveling { get; set; }
         public UsersHeros UsersHeros { get; set; }
