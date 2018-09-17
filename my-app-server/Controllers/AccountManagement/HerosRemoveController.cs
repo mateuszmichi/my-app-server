@@ -62,14 +62,16 @@ namespace my_app_server.Controllers
             var equipmenttoremove = _context.Equipment.Where(e => e.HeroId == herotoremove.HeroId);
             var backpacktoremove = _context.Backpack.Where(e => e.HeroId == herotoremove.HeroId);
             var healingremove = _context.Healing.Where(e => e.HeroId == herotoremove.HeroId);
+            var fightingremove = _context.Fighting.Where(e => e.HeroId == herotoremove.HeroId);
             // TODO: remove other features
-            
+
             if (tokentoremove.Count() > 0) _context.ActionToken.RemoveRange(tokentoremove);
             if (locationstoremove.Count() > 0) _context.HerosLocations.RemoveRange(locationstoremove);
             if (travelingtoremove.Count() > 0) _context.Traveling.RemoveRange(travelingtoremove);
             if (equipmenttoremove.Count() > 0) _context.Equipment.RemoveRange(equipmenttoremove);
             if (backpacktoremove.Count() > 0) _context.Backpack.RemoveRange(backpacktoremove);
             if (healingremove.Count() > 0) _context.Healing.RemoveRange(healingremove);
+            if (fightingremove.Count() > 0) _context.Fighting.RemoveRange(fightingremove);
 
             _context.Heros.Remove(herotoremove);
             _context.UsersHeros.Remove(conntoremove);

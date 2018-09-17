@@ -21,11 +21,17 @@
     <Compile Include="Models\ActionToken.cs" />
     <Compile Include="Models\ActionTokenExt.cs" />
     <Compile Include="Models\Backpack.cs" />
+    <Compile Include="Models\Enemies.cs" />
+    <Compile Include="Models\EnemiesExt.cs" />
     <Compile Include="Models\Equipment.cs" />
     <Compile Include="Models\EquipmentExt.cs" />
+    <Compile Include="Models\Fighting.cs" />
+    <Compile Include="Models\FightingExt.cs" />
     <Compile Include="Models\Game\EquipmentControll.cs" />
+    <Compile Include="Models\Game\FightingCalculator.cs" />
     <Compile Include="Models\Game\Graph.cs" />
     <Compile Include="Models\Game\HeroCalculator.cs" />
+    <Compile Include="Models\Game\Instance.cs" />
     <Compile Include="Models\Game\Location.cs" />
     <Compile Include="Models\Game\LocationHandler.cs" />
     <Compile Include="Models\Global\Email.cs" />
@@ -55,8 +61,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\Game\Healing\" />
-    <Folder Include="Controllers\Login\" />
     <Folder Include="Controllers\AccountManagement\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>

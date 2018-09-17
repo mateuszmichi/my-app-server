@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace my_app_server.Models
 {
-    public class LocationDescription
+    public class InstanceDescription
     {
         public string LocationName { get; set; }
         public Node[] Nodes { get; set; }
-        public MainNode[] MainNodes { get; set; }
+        public InstanceNode[] MainNodes { get; set; }
         public Edge[] Edges { get; set; }
         public ExtensionPath[] Paths { get; set; }
         public int InitialNode { get; set; }
@@ -17,7 +17,7 @@ namespace my_app_server.Models
         public int LocationID { get; set; }
         public int LocationGlobalType { get; set; }
 
-        public LocationResult<MainNodeResult> GenLocalForm(LocationState state)
+        public LocationResult<InstanceNodeResult> GenLocalForm(InstanceState state)
         {
             //check loaded data
             if (state.IsDiscovered.Length != this.Nodes.Length)
@@ -28,7 +28,7 @@ namespace my_app_server.Models
             int counter = 0;
             Dictionary<int, int> dict = new Dictionary<int, int>();
             List<Node> seenNodes = new List<Node>();
-            List<MainNodeResult> seenMains = new List<MainNodeResult>();
+            List<InstanceNodeResult> seenMains = new List<InstanceNodeResult>();
             for (int i = 0; i < this.Nodes.Length; i++)
             {
                 if (state.IsDiscovered[i])
@@ -37,16 +37,16 @@ namespace my_app_server.Models
                     dict.Add(i, counter++);
                 }
             }
-            foreach (MainNode main in this.MainNodes)
+            foreach (InstanceNode main in this.MainNodes)
             {
                 if (state.IsDiscovered[main.NodeID])
                 {
-                    MainNodeResult nowa = new MainNodeResult()
+                    InstanceNodeResult nowa = new InstanceNodeResult()
                     {
-                        LocationType = (state.IsVisited[main.NodeID]) ? main.LocationType : LOCATIONS.UNKNOWN,
-                        Name = main.Name,
+                        InstanceType = main.InstanceType,
+                        Level = main.Level,
                         NodeID = dict[main.NodeID],
-                        
+                        IsCleared = state.IsCleared[main.NodeID],
                     };
                     seenMains.Add(nowa);
                 }
@@ -59,7 +59,7 @@ namespace my_app_server.Models
                     seenEdges.Add(new Edge(dict[e.From], dict[e.To], e.Value));
                 }
             }
-            return new LocationResult<MainNodeResult>()
+            return new LocationResult<InstanceNodeResult>()
             {
                 LocationGlobalType = this.LocationGlobalType,
                 CurrentLocation = dict[state.CurrentLocation],
@@ -71,14 +71,16 @@ namespace my_app_server.Models
                 LocationID = this.LocationID,
             };
         }
-        
-        public LocationState MoveTo(int globalNewNode, LocationState initialState)
+        public InstanceState MoveTo(int newNode, InstanceState initialState)
         {
-            LocationState state = new LocationState()
+            // List<int> mapper = GenerateDictionary(initialState);
+            int globalNewNode = newNode;
+            InstanceState state = new InstanceState()
             {
                 CurrentLocation = globalNewNode,
                 IsDiscovered = initialState.IsDiscovered,
                 IsVisited = initialState.IsVisited,
+                IsCleared = initialState.IsCleared,
             };
             var mainnode = this.MainNodes.FirstOrDefault(e => e.NodeID == globalNewNode);
             if (mainnode == null)
@@ -105,7 +107,7 @@ namespace my_app_server.Models
             }
             return state;
         }
-        private List<int> GenerateDictionary(LocationState initialstate)
+        private List<int> GenerateDictionary(InstanceState initialstate)
         {
             List<int> dict = new List<int>();
             for (int i = 0; i < this.Nodes.Length; i++)
@@ -117,7 +119,7 @@ namespace my_app_server.Models
             }
             return dict;
         }
-        public int GlobalMainNodeID(int localID, LocationState localstate)
+        public int GlobalMainNodeID(int localID, InstanceState localstate)
         {
             List<int> mapper = GenerateDictionary(localstate);
             int globalNewNode = mapper[localID];
@@ -132,87 +134,53 @@ namespace my_app_server.Models
             }
             return globalNewNode;
         }
-        public LocationState InitializeLocation()
+
+        public InstanceState InitializeLocation()
         {
-            LocationState state = new LocationState
+            InstanceState state = new InstanceState
             {
                 CurrentLocation = this.InitialNode,
                 IsDiscovered = new bool[this.Nodes.Length],
-                IsVisited = new bool[this.Nodes.Length]
+                IsVisited = new bool[this.Nodes.Length],
+                IsCleared = new bool[this.Nodes.Length],
             };
             state.IsDiscovered[state.CurrentLocation] = true;
             return MoveTo(state.CurrentLocation, state);
         }
     }
-    public class MainNode
-    {
-        public int NodeID { get; set; }
-        public LOCATIONS LocationType { get; set; }
-        public string Name { get; set; }
-        public int Data { get; set; }
-        public static explicit operator MainNodeResult(MainNode node)
-        {
-            return new MainNodeResult()
-            {
-                NodeID = node.NodeID,
-                LocationType = node.LocationType,
-                Name = node.Name,
-            };
-        }
-    }
-    public class MainNodeResult
-    {
-        public int NodeID { get; set; }
-        public LOCATIONS LocationType { get; set; }
-        public string Name { get; set; }
-    }
-
-    public class Node
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public static Func<Node,Node,double> HeuristicDistance = (Node n1, Node n2) =>
-        {
-            return Math.Sqrt((n1.X - n2.X) * (n1.X - n2.X) + (n1.Y - n2.Y) * (n1.Y - n2.Y));
-        };
-    }
-    public class ExtensionPath
-    {
-        public int[] Path { get; set; }
-        public int NodeFrom { get; set; }
-        public int NodeTo { get; set; }
-    }
-    public class LocationState
+    public class InstanceState
     {
         public int CurrentLocation { get; set; }
         public bool[] IsDiscovered { get; set; }
         public bool[] IsVisited { get; set; }
+        public bool[] IsCleared { get; set; }
     }
-    public class LocationResult<T>
+    public class InstanceNode
     {
-        public int LocationGlobalType { get; set; }
-        public int CurrentLocation { get; set; }
-        public string LocationName { get; set; }
-        public int TravelScale { get; set; }
-        public Node[] Nodes { get; set; }
-        public T[] MainNodes { get; set; }
-        public Edge[] Edges { get; set; }
-        public int LocationID { get; set; }
+        public int NodeID { get; set; }
+        public INSTANCES InstanceType { get; set; }
+        public int Level { get; set; }
+        public int Data { get; set; }
     }
-    public enum LOCATIONS
+    public class InstanceNodeResult
     {
-        UNKNOWN,
-        LANDLOCATION,
-        GLOBALLOCATION,
-        SAFELOCATION,
-        LOCALLOCATION,
+        public int NodeID { get; set; }
+        public INSTANCES InstanceType { get; set; }
+        public int Level { get; set; }
+        public bool IsCleared { get; set; }
     }
-    public enum LOCATION_OPTIONS
+    public enum INSTANCES
     {
-        TOGLOBAL,
+        ENTRANCE,
+        ENEMY,
+        BOSS,
+        TREASURE,
+    }
+    public enum INSTANCE_OPTIONS
+    {
         TOLOCAL,
-        TOINSTANCE,
-        TOSHOP,
-        TOREST,
+        TOFIGHT,
+        TOTREASURE,
+        TOEVENT,
     }
 }

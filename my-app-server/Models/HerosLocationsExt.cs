@@ -15,10 +15,21 @@ namespace my_app_server.Models
             {
                 throw new Exception("Starting in unknown location.");
             }
-            LocationDescription description = JsonConvert.DeserializeObject<LocationDescription>(locSk.Sketch);
+            string Description = "";
+            int LocationType = locSk.LocationGlobalType;
+            if (LocationType != 2)
+            {
+                LocationDescription description = JsonConvert.DeserializeObject<LocationDescription>(locSk.Sketch);
+                Description = JsonConvert.SerializeObject(description.InitializeLocation());
+            } else
+            {
+                InstanceDescription description = JsonConvert.DeserializeObject<InstanceDescription>(locSk.Sketch);
+                Description = JsonConvert.SerializeObject(description.InitializeLocation());
+            }
+                
             return new HerosLocations()
             {
-                Description = JsonConvert.SerializeObject(description.InitializeLocation()),
+                Description = Description,
                 HeroId = heroID,
                 LocationIdentifier = locationID,
                 LocationId = 1000 * heroID + locationID,

@@ -92,4 +92,22 @@ namespace my_app_server.Models
         public int InitialHP { get; set; }
         public int FinalHP { get; set; }
     }
+    public class FightResult
+    {
+        public string EnemyName { get; set; }
+        public int EnemyID { get; set; }
+        public int EnemyLevel { get; set; }
+        public int Hp { get; set; }
+        public int HpMax { get; set; }
+        public bool IsOver { get; set; }
+        public ItemResult Loot { get; set; }
+        public int Experience { get; set; }
+        public BattleLog[] Log { get; set; }
+    }
+    public class BattleLog
+    {
+        public int Target { get; set; }
+        public int Damage { get; set; }
+        public FightingCalculator.AttackType AttackType { get; set; }
+    }
 }

@@ -17,7 +17,7 @@ namespace my_app_server.Models
                 Level = hero.Lvl,
             });
         }
-        public HeroResult GenResult(EquipmentResult eqRes, LocationResult locRes, object statusData = null )
+        public HeroResult GenResult(EquipmentResult eqRes, object locRes, object statusData = null )
         {
             return (new HeroResult()
             {
@@ -57,7 +57,7 @@ namespace my_app_server.Models
         public int Slmax { get; set; }
         public int Exp { get; set; }
         public EquipmentResult Equipment { get; set; }
-        public LocationResult Location { get; set; }
+        public object Location { get; set; }
         public int Status { get; set; }
         public object StatusData { get; set; }
         public int VelocityFactor { get; set; }

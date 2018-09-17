@@ -8,7 +8,9 @@ namespace my_app_server.Models
     {
         public virtual DbSet<ActionToken> ActionToken { get; set; }
         public virtual DbSet<Backpack> Backpack { get; set; }
+        public virtual DbSet<Enemies> Enemies { get; set; }
         public virtual DbSet<Equipment> Equipment { get; set; }
+        public virtual DbSet<Fighting> Fighting { get; set; }
         public virtual DbSet<Healing> Healing { get; set; }
         public virtual DbSet<Heros> Heros { get; set; }
         public virtual DbSet<HerosLocations> HerosLocations { get; set; }
@@ -19,15 +21,6 @@ namespace my_app_server.Models
         public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<UsersHeros> UsersHeros { get; set; }
         public virtual DbSet<UserToken> UserToken { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer(@"Server=DESKTOP-4906ULP\SQLEXPRESS;Database=my-app;Trusted_Connection=True;");
-            }
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -80,6 +73,28 @@ namespace my_app_server.Models
                     .HasForeignKey(d => d.ItemId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Backpack_Items");
+            });
+
+            modelBuilder.Entity<Enemies>(entity =>
+            {
+                entity.HasKey(e => e.EnemyId);
+
+                entity.Property(e => e.EnemyId)
+                    .HasColumnName("EnemyID")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EnemyName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.GraphicsId).HasColumnName("GraphicsID");
+
+                entity.Property(e => e.Loot)
+                    .IsRequired()
+                    .IsUnicode(false);
+
+                entity.Property(e => e.MaxHp).HasColumnName("MaxHP");
             });
 
             modelBuilder.Entity<Equipment>(entity =>
@@ -145,6 +160,31 @@ namespace my_app_server.Models
                     .WithMany(p => p.EquipmentTrousersNavigation)
                     .HasForeignKey(d => d.Trousers)
                     .HasConstraintName("FK_Equipment_Items3");
+            });
+
+            modelBuilder.Entity<Fighting>(entity =>
+            {
+                entity.HasKey(e => e.HeroId);
+
+                entity.Property(e => e.HeroId)
+                    .HasColumnName("HeroID")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EnemyHp).HasColumnName("EnemyHP");
+
+                entity.Property(e => e.EnemyId).HasColumnName("EnemyID");
+
+                entity.HasOne(d => d.Enemy)
+                    .WithMany(p => p.Fighting)
+                    .HasForeignKey(d => d.EnemyId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Fighting_Enemies");
+
+                entity.HasOne(d => d.Hero)
+                    .WithOne(p => p.Fighting)
+                    .HasForeignKey<Fighting>(d => d.HeroId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Fighting_Heros");
             });
 
             modelBuilder.Entity<Healing>(entity =>
