@@ -19,8 +19,8 @@ namespace my_app_server.Models
                 $"<div style=\"font-family: Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;\"> " +
                 $"<h2 style=\"color:darkred;\">{user.Name}</h2>" +
                 $"<h2>Your account has been successfully created!</h2>" +
-                $"<p>You can now enter the game on http://localhost:3000." +
-                $"<p>Your password to log in is: <span style=\"color:darkblue; \">{password}</span></p>" +
+                $"<p>You can now enter the game on https://mateuszmichi.github.io." +
+                $"<p>Log in with username: <span style=\"color:darkblue; \">{user.Name}</span> and password passed during registry.</p>" +
                 $"</div></body></html>";
 
             var smtp = new SmtpClient
