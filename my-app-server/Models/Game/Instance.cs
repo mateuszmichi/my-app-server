@@ -71,7 +71,7 @@ namespace my_app_server.Models
                 LocationID = this.LocationID,
             };
         }
-        public InstanceState MoveTo(int newNode, InstanceState initialState)
+        public InstanceState MoveTo(int newNode, InstanceState initialState, bool showNeighbour)
         {
             // List<int> mapper = GenerateDictionary(initialState);
             int globalNewNode = newNode;
@@ -91,9 +91,10 @@ namespace my_app_server.Models
             {
                 throw new Exception("Move to undiscovered node!");
             }
-            if (!initialState.IsVisited[globalNewNode])
+            //update nodes status
+            state.IsVisited[globalNewNode] = true;
+            if (showNeighbour)
             {
-                state.IsVisited[globalNewNode] = true;
                 var paths = this.Paths.Where(e => (e.NodeFrom == globalNewNode) || (e.NodeTo == globalNewNode));
                 foreach (ExtensionPath path in paths)
                 {
@@ -105,6 +106,7 @@ namespace my_app_server.Models
                     }
                 }
             }
+
             return state;
         }
         private List<int> GenerateDictionary(InstanceState initialstate)
@@ -145,7 +147,7 @@ namespace my_app_server.Models
                 IsCleared = new bool[this.Nodes.Length],
             };
             state.IsDiscovered[state.CurrentLocation] = true;
-            return MoveTo(state.CurrentLocation, state);
+            return MoveTo(state.CurrentLocation, state,true);
         }
     }
     public class InstanceState

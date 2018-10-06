@@ -194,7 +194,7 @@ namespace my_app_server.Controllers
                 _context.Fighting.Remove(fight);
                 try
                 {
-                    var location = LocationHandler.InstanceClearCurrent(_context, hero);
+                    var location = LocationHandler.InstanceClearCurrent(_context, hero,true);
                     try
                     {
                         await _context.SaveChangesAsync();

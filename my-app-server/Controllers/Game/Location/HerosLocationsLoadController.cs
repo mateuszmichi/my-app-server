@@ -90,6 +90,9 @@ namespace my_app_server.Controllers
             }
             try
             {
+                // to pass status data
+                object statusData = null;
+
                 // TODO check location type -> vitual class or what?
                 int LocationType = descr.LocationGlobalType;
                 if(LocationType != 2)
@@ -134,6 +137,7 @@ namespace my_app_server.Controllers
                 }
                 else
                 {
+                    // hero can possible enter the fight
                     InstanceDescription description = JsonConvert.DeserializeObject<InstanceDescription>(descr.Sketch);
                     InstanceState state = JsonConvert.DeserializeObject<InstanceState>(location.Description);
                     description.LocationGlobalType = LocationType;
@@ -147,8 +151,25 @@ namespace my_app_server.Controllers
                         }
                         if (travel.HasEnded(now))
                         {
-                            state = description.MoveTo(travel.UpdatedLocationID(), state);
-                            hero.Status = 0;
+                            var targetnode = description.MainNodes.FirstOrDefault(e => e.NodeID == travel.UpdatedLocationID());
+                            if (targetnode == null)
+                            {
+                                throw new Exception("Move to notmain node!");
+                            }
+                            if ((targetnode.InstanceType == INSTANCES.BOSS || targetnode.InstanceType == INSTANCES.ENEMY) && !state.IsCleared[targetnode.NodeID])
+                            {
+                                var fight = LocationHandler.StartFightAfterTravel(_context, hero, targetnode.Data);
+                                statusData = fight.GenResult(_context, hero);
+                                //hero status will be read below, no need to double code
+                                hero.Status = 3;
+                                state = description.MoveTo(travel.UpdatedLocationID(), state,false);
+                            }
+                            else
+                            {
+                                hero.Status = 0;
+                                state = description.MoveTo(travel.UpdatedLocationID(), state,true);
+                            }
+
                             location.Description = JsonConvert.SerializeObject(state);
                             _context.Traveling.Remove(travel);
                             try
@@ -160,7 +181,7 @@ namespace my_app_server.Controllers
                                 return BadRequest(new DataError("databaseErr", "Failed to remove travel."));
                             }
                             LocationResult<InstanceNodeResult> locationResult = description.GenLocalForm(state);
-                            return Ok(new { success = true, location = locationResult });
+                            return Ok(new { success = true, location = locationResult, herostatus = hero.Status, statusdata = statusData});
                         }
                         else
                         {

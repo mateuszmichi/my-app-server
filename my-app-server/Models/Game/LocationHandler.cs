@@ -58,6 +58,27 @@ namespace my_app_server.Models
             hero.CurrentLocation = locationID;
             return 0;
         }
+        public static Fighting StartFightAfterTravel(my_appContext _context, Heros hero, int enemyID)
+        {
+            var enemy = _context.Enemies.FirstOrDefault(e => e.EnemyId == enemyID);
+            if (enemy == null)
+            {
+                throw new OperationException("fightErr", "Unknown emeny to enter battle.");
+            }
+            Fighting fight = new Fighting()
+            {
+                EnemyHp = enemy.MaxHp,
+                EnemyId = enemy.EnemyId,
+                HeroId = hero.HeroId,
+                IsOver = false,
+                Loot = null,
+                Initiative = 0,
+            };
+            _context.Fighting.Add(fight);
+            hero.Status = 3;
+
+            return fight;
+        }
         public static int StartFight(my_appContext _context,Heros hero, int enemyID)
         {
             if (hero.Status == 0)
@@ -103,7 +124,7 @@ namespace my_app_server.Models
             {INSTANCE_OPTIONS.TOLOCAL, MoveHeroToLocation},
             {INSTANCE_OPTIONS.TOFIGHT, StartFight},
         };
-        public static LocationResult<InstanceNodeResult> InstanceClearCurrent(my_appContext _context, Heros hero)
+        public static LocationResult<InstanceNodeResult> InstanceClearCurrent(my_appContext _context, Heros hero, bool affectNeighbours)
         {
             var location = _context.HerosLocations.FirstOrDefault(e => (e.HeroId == hero.HeroId) && (e.LocationIdentifier == hero.CurrentLocation));
             if (location == null)
@@ -130,6 +151,22 @@ namespace my_app_server.Models
                 if (hero.Hp > 0)
                 {
                     state.IsCleared[state.CurrentLocation] = true;
+
+                    state.IsVisited[state.CurrentLocation] = true;
+                    if (affectNeighbours)
+                    {
+                        var paths = description.Paths.Where(e => (e.NodeFrom == state.CurrentLocation) || (e.NodeTo == state.CurrentLocation));
+                        foreach (ExtensionPath path in paths)
+                        {
+                            state.IsDiscovered[path.NodeFrom] = true;
+                            state.IsDiscovered[path.NodeTo] = true;
+                            foreach (int node in path.Path)
+                            {
+                                state.IsDiscovered[node] = true;
+                            }
+                        }
+                    }
+
                     location.Description = JsonConvert.SerializeObject(state);
                 }
 
@@ -188,8 +225,10 @@ namespace my_app_server.Models
                     }
                 }
                 locationResult = description.GenLocalForm(state);
-            } else
+            }
+            else
             {
+                // This part is about the location, where hero can enter fight
                 InstanceDescription description = JsonConvert.DeserializeObject<InstanceDescription>(descr.Sketch);
                 InstanceState state = JsonConvert.DeserializeObject<InstanceState>(location.Description);
                 description.LocationGlobalType = descr.LocationGlobalType;
@@ -203,8 +242,27 @@ namespace my_app_server.Models
                     }
                     if (travel.HasEnded(now))
                     {
-                        state = description.MoveTo(travel.UpdatedLocationID(), state);
-                        hero.Status = 0;
+                        // get info about end of travel -> maybe other move to with BOOL?
+                        var targetnode = description.MainNodes.FirstOrDefault(e => e.NodeID == travel.UpdatedLocationID());
+                        if (targetnode == null)
+                        {
+                            throw new Exception("Move to notmain node!");
+                        }
+                        if((targetnode.InstanceType == INSTANCES.BOSS || targetnode.InstanceType == INSTANCES.ENEMY) && !state.IsCleared[targetnode.NodeID])
+                        {
+                            LocationHandler.StartFightAfterTravel(_context, hero, targetnode.Data);
+                            //hero status will be read below, no need to double code
+                            hero.Status = 3;
+                            state = description.MoveTo(travel.UpdatedLocationID(), state,false);
+                        }
+                        else
+                        {
+                            hero.Status = 0;
+                            state = description.MoveTo(travel.UpdatedLocationID(), state,true);
+                        }
+                        // TODO update with cleannode
+                        
+                        
                         location.Description = JsonConvert.SerializeObject(state);
                         _context.Traveling.Remove(travel);
                         try
