@@ -20,6 +20,9 @@
   <ItemGroup>
     <Compile Include="Models\ActionToken.cs" />
     <Compile Include="Models\ActionTokenExt.cs" />
+    <Compile Include="Models\Admins.cs" />
+    <Compile Include="Models\AdminsTokens.cs" />
+    <Compile Include="Models\AdminsTokensExt.cs" />
     <Compile Include="Models\Backpack.cs" />
     <Compile Include="Models\Enemies.cs" />
     <Compile Include="Models\EnemiesExt.cs" />

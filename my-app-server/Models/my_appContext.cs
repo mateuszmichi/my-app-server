@@ -7,6 +7,8 @@ namespace my_app_server.Models
     public partial class my_appContext : DbContext
     {
         public virtual DbSet<ActionToken> ActionToken { get; set; }
+        public virtual DbSet<Admins> Admins { get; set; }
+        public virtual DbSet<AdminsTokens> AdminsTokens { get; set; }
         public virtual DbSet<Backpack> Backpack { get; set; }
         public virtual DbSet<Enemies> Enemies { get; set; }
         public virtual DbSet<Equipment> Equipment { get; set; }
@@ -28,13 +30,6 @@ namespace my_app_server.Models
             {
                 entity.HasKey(e => e.HeroId);
 
-                entity.HasIndex(e => e.ExpireDate)
-                    .HasName("IX_ActionToken_1");
-
-                entity.HasIndex(e => e.HeroId)
-                    .HasName("IX_ActionToken")
-                    .IsUnique();
-
                 entity.Property(e => e.HeroId)
                     .HasColumnName("HeroID")
                     .ValueGeneratedNever();
@@ -50,6 +45,41 @@ namespace my_app_server.Models
                     .HasForeignKey<ActionToken>(d => d.HeroId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ActionToken_Heros");
+            });
+
+            modelBuilder.Entity<Admins>(entity =>
+            {
+                entity.HasKey(e => e.Login);
+
+                entity.Property(e => e.Login)
+                    .HasMaxLength(30)
+                    .IsUnicode(false)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Password)
+                    .IsRequired()
+                    .HasMaxLength(30)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<AdminsTokens>(entity =>
+            {
+                entity.HasKey(e => e.Login);
+
+                entity.Property(e => e.Login)
+                    .HasMaxLength(30)
+                    .IsUnicode(false)
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Token)
+                    .IsRequired()
+                    .HasColumnType("nchar(64)");
+
+                entity.HasOne(d => d.LoginNavigation)
+                    .WithOne(p => p.AdminsTokens)
+                    .HasForeignKey<AdminsTokens>(d => d.Login)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AdminsTokens_Admins");
             });
 
             modelBuilder.Entity<Backpack>(entity =>
@@ -214,10 +244,6 @@ namespace my_app_server.Models
             {
                 entity.HasKey(e => e.HeroId);
 
-                entity.HasIndex(e => e.Name)
-                    .HasName("IX_Heros")
-                    .IsUnique();
-
                 entity.Property(e => e.HeroId)
                     .HasColumnName("HeroID")
                     .ValueGeneratedNever();
@@ -242,16 +268,6 @@ namespace my_app_server.Models
             modelBuilder.Entity<HerosLocations>(entity =>
             {
                 entity.HasKey(e => e.LocationId);
-
-                entity.HasIndex(e => e.HeroId)
-                    .HasName("IX_HerosLocations");
-
-                entity.HasIndex(e => e.LocationIdentifier)
-                    .HasName("IX_HerosLocations_1");
-
-                entity.HasIndex(e => new { e.HeroId, e.LocationIdentifier })
-                    .HasName("IX_HerosLocations_2")
-                    .IsUnique();
 
                 entity.Property(e => e.LocationId)
                     .HasColumnName("LocationID")
@@ -298,9 +314,6 @@ namespace my_app_server.Models
 
                 entity.ToTable("LocationsDB");
 
-                entity.HasIndex(e => e.LocationIdentifier)
-                    .HasName("IX_LocationsDB");
-
                 entity.Property(e => e.LocationIdentifier).ValueGeneratedNever();
 
                 entity.Property(e => e.Sketch)
@@ -311,10 +324,6 @@ namespace my_app_server.Models
             modelBuilder.Entity<Tokens>(entity =>
             {
                 entity.HasKey(e => e.TokenName);
-
-                entity.HasIndex(e => e.UserName)
-                    .HasName("IX_Tokens")
-                    .IsUnique();
 
                 entity.Property(e => e.TokenName)
                     .HasColumnType("nchar(64)")
@@ -336,8 +345,8 @@ namespace my_app_server.Models
                     .IsUnicode(false);
 
                 entity.HasOne(d => d.UserNameNavigation)
-                    .WithOne(p => p.Tokens)
-                    .HasForeignKey<Tokens>(d => d.UserName)
+                    .WithMany(p => p.Tokens)
+                    .HasForeignKey(d => d.UserName)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Tokens_Users1");
             });
@@ -345,9 +354,6 @@ namespace my_app_server.Models
             modelBuilder.Entity<Traveling>(entity =>
             {
                 entity.HasKey(e => e.HeroId);
-
-                entity.HasIndex(e => e.EndTime)
-                    .HasName("IX_Traveling");
 
                 entity.Property(e => e.HeroId)
                     .HasColumnName("HeroID")
@@ -380,16 +386,6 @@ namespace my_app_server.Models
             {
                 entity.HasKey(e => e.Name);
 
-                entity.HasIndex(e => e.Email)
-                    .HasName("IX_Email")
-                    .IsUnique();
-
-                entity.HasIndex(e => e.LastLogin)
-                    .HasName("IX_LastLogin");
-
-                entity.HasIndex(e => e.RegistryDate)
-                    .HasName("IX_RegistryDate");
-
                 entity.Property(e => e.Name)
                     .HasMaxLength(30)
                     .IsUnicode(false)
@@ -412,16 +408,6 @@ namespace my_app_server.Models
             modelBuilder.Entity<UsersHeros>(entity =>
             {
                 entity.HasKey(e => e.HeroId);
-
-                entity.HasIndex(e => e.HeroId)
-                    .HasName("IX_UsersHeros_2");
-
-                entity.HasIndex(e => e.UserName)
-                    .HasName("IX_UsersHeros_1");
-
-                entity.HasIndex(e => new { e.UserName, e.HeroId })
-                    .HasName("IX_UsersHeros")
-                    .IsUnique();
 
                 entity.Property(e => e.HeroId)
                     .HasColumnName("HeroID")
@@ -448,13 +434,6 @@ namespace my_app_server.Models
             modelBuilder.Entity<UserToken>(entity =>
             {
                 entity.HasKey(e => e.UserName);
-
-                entity.HasIndex(e => e.ExpireDate)
-                    .HasName("IX_UserToken_1");
-
-                entity.HasIndex(e => e.UserName)
-                    .HasName("IX_UserToken")
-                    .IsUnique();
 
                 entity.Property(e => e.UserName)
                     .HasMaxLength(30)

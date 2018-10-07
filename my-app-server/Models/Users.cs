@@ -7,6 +7,7 @@ namespace my_app_server.Models
     {
         public Users()
         {
+            Tokens = new HashSet<Tokens>();
             UsersHeros = new HashSet<UsersHeros>();
         }
 
@@ -16,8 +17,8 @@ namespace my_app_server.Models
         public DateTime RegistryDate { get; set; }
         public DateTime LastLogin { get; set; }
 
-        public Tokens Tokens { get; set; }
         public UserToken UserToken { get; set; }
+        public ICollection<Tokens> Tokens { get; set; }
         public ICollection<UsersHeros> UsersHeros { get; set; }
     }
 }

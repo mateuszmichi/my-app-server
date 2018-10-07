@@ -50,5 +50,23 @@ namespace my_app_server.Models
             }
             return token;
         }
+        public static AdminsTokens CheckAdminsToken(my_appContext context, AdminsTokens token)
+        {
+            return context.AdminsTokens.FirstOrDefault(e => (e.Login == token.Login && e.Token == token.Token));
+        }
+        public static AdminsTokens GenerateAdminsToken(string username, my_appContext _context)
+        {
+            AdminsTokens token;
+            if ((token = _context.AdminsTokens.FirstOrDefault(e => e.Login == username)) == null)
+            {
+                token = AdminsTokens.GenToken(username);
+                _context.AdminsTokens.Add(token);
+            }
+            else
+            {
+                token.Token = HashClass.GenToken();
+            }
+            return token;
+        }
     }
 }

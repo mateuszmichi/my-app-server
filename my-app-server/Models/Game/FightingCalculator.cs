@@ -50,6 +50,7 @@ namespace my_app_server.Models
         }
         private static int CalcDMG(double dmg, double def)
         {
+            if (dmg <= 0) return 0;
             return (int)Math.Ceiling(dmg * Math.Pow(4.0 / 9.0, def / dmg));
         }
 
